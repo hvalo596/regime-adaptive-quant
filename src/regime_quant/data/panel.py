@@ -96,3 +96,20 @@ def build_panel(
         diagnostics=pd.DataFrame(diags),
         continuous=conts,
     )
+
+
+def subset_panel(panel: Panel, products: list[str]) -> Panel:
+    """Column subset of an assembled panel (same dates, same flags). Dates before a subset's first valid return are
+    trimmed so that sector panels do not carry an all-NaN head."""
+    cols = [p for p in products if p in panel.returns.columns]
+    if not cols:
+        raise ValueError("none of the requested products are in the panel")
+    first = panel.returns[cols].dropna(how="all").index[0]
+    cut = lambda df: df.loc[first:, cols]  # noqa: E731
+    return Panel(
+        returns=cut(panel.returns), roll=cut(panel.roll), limit_locked=cut(panel.limit_locked),
+        one_price=cut(panel.one_price), stale=cut(panel.stale), night_draft=cut(panel.night_draft),
+        extreme_ret=cut(panel.extreme_ret),
+        diagnostics=panel.diagnostics[panel.diagnostics["product"].isin(cols)].reset_index(drop=True),
+        continuous={p: panel.continuous[p] for p in cols},
+    )

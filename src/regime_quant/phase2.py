@@ -63,6 +63,21 @@ def run_phase2(
     store: RawStore,
     products: list[str] | None = None,
     source: str = "tushare",
+    roll: RollParams = RollParams(),
+    panel_params: PanelParams = PanelParams(),
+    progress=print,
+    **analysis_kw,
+) -> Phase2Result:
+    products = products or commodity_products()
+    basic, daily, mappings = load_raw(store, products)
+    progress(f"building panel from {daily['ts_code'].nunique()} contracts ...")
+    panel = build_panel(products, basic, daily, mappings, roll, panel_params)
+    return analyze_panel(panel, source=source, roll=roll, panel_params=panel_params, progress=progress, **analysis_kw)
+
+
+def analyze_panel(
+    panel: Panel,
+    source: str = "tushare",
     sp: StrategyParams = StrategyParams(),
     cp: CostParams = CostParams(),
     pp: ProxyParams = ProxyParams(),
@@ -71,12 +86,9 @@ def run_phase2(
     roll: RollParams = RollParams(),
     panel_params: PanelParams = PanelParams(),
     n_null: int | None = None,
+    n_primary_override: int | None = None,
     progress=print,
 ) -> Phase2Result:
-    products = products or commodity_products()
-    basic, daily, mappings = load_raw(store, products)
-    progress(f"building panel from {daily['ts_code'].nunique()} contracts ...")
-    panel = build_panel(products, basic, daily, mappings, roll, panel_params)
     ret = panel.returns
     live = ret.dropna(how="all")
     progress(f"panel: {ret.shape[1]} products, {live.index[0].date()} .. {live.index[-1].date()}")
@@ -87,7 +99,7 @@ def run_phase2(
     for name in proxies.columns:
         ledger.add(name, universe="commodity", window=ep.kai_window if name in ("sys_level", "sys_share", "idio_level", "idio_conc") else "vr",
                    expected_sign=EXPECTED_SIGN[name])
-    n_primary = ledger.n
+    n_primary = n_primary_override or ledger.n
 
     rng = np.random.default_rng(ep.seed)
     rows = [existence_row(n, proxies[n], d_net, ip, ep, pp, n_primary, rng) for n in proxies.columns]

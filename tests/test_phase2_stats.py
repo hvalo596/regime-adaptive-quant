@@ -164,3 +164,38 @@ def test_recognition_delay_matches_construction():
     noisy = pd.Series(level + rng.normal(0, 3.0, n), index=idx)
     tn = recognition_stats(noisy, min_obs=250, smooth=5, min_len=20)
     assert tn["causal_flips_per_year"].iloc[0] > t["causal_flips_per_year"].iloc[0]
+
+
+def _small_panel(tmp_path, products, n_days=1000):
+    from regime_quant.data.panel import PanelParams, build_panel
+    from regime_quant.data.roll import RollParams
+
+    data = make_synthetic_futures(products, n_days=n_days, seed=11)
+    store = RawStore(tmp_path / "raw")
+    client = TushareClient(TushareConfig(token="x", max_calls_per_min=10**6), transport=FakeTushareTransport(data), sleep=lambda s: None)
+    fetch_universe(client, store, products, start="20100101", progress=lambda *_: None)
+    from regime_quant.phase2 import load_raw
+
+    b, d, m = load_raw(store, products)
+    return build_panel(products, b, d, m, RollParams(), PanelParams())
+
+
+def test_cost_grid_and_subset_panel_and_single_product(tmp_path):
+    from regime_quant.config import CostParams, InferenceParams, ProxyParams, StrategyParams
+    from regime_quant.data.panel import subset_panel
+    from regime_quant.sensitivity import cost_sensitivity, sector_products, single_product_tests
+
+    products = ["RB", "HC", "I", "CU", "AL", "ZN"]
+    pan = _small_panel(tmp_path, products)
+    ep = ExistenceParams(n_boot=60, n_shift=60)
+    ex, legs, dec = cost_sensitivity(pan, StrategyParams(), ProxyParams(), InferenceParams(), ep)
+    assert set(ex["scenario"]) == {"zero", "half", "draft", "double"} and set(dec["leg"]) == {"z_mom_gross", "z_rev_gross"}
+    sh = legs[legs["leg"] == "rev"].set_index("scenario")["sharpe"]
+    assert sh["zero"] > sh["draft"] > sh["double"]  # costs only ever subtract
+    secs = sector_products(pan, 2)
+    assert secs["ferrous"] == ["RB", "HC", "I"]
+    sub = subset_panel(pan, ["RB", "I"])
+    assert list(sub.returns.columns) == ["RB", "I"] and sub.returns.index[0] >= pan.returns.index[0]
+    t = single_product_tests({"RB": subset_panel(pan, ["RB"])}, StrategyParams(), CostParams(), ProxyParams(),
+                             InferenceParams(), ep, n_primary=2)
+    assert set(t["proxy"]) == {"vr_short", "vr_long"} and (t["n_assets"] == 1).all()
