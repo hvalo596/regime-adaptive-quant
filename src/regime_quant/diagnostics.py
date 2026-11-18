@@ -21,19 +21,21 @@ from .config import TRADING_DAYS, InferenceParams, ProxyParams
 from .inference import group_mean_diff_ci
 
 
-def variance_ratio(returns: pd.DataFrame, q: int, window: int) -> pd.Series:
-    """Cross-asset mean of rolling Lo-MacKinlay VR(q). Overlapping q-sums; window in days."""
+def variance_ratio(returns: pd.DataFrame, q: int, window: int, min_assets: int = 1) -> pd.Series:
+    """Cross-asset mean of rolling Lo-MacKinlay VR(q). Overlapping q-sums; window in days.
+    Days with fewer than `min_assets` live assets are NaN (unbalanced real-data panels)."""
     var1 = returns.rolling(window, min_periods=window).var()
     sq = returns.rolling(q, min_periods=q).sum()
     varq = sq.rolling(window - q + 1, min_periods=window - q + 1).var()
-    return (varq / (q * var1)).mean(axis=1)
+    vr = varq / (q * var1)
+    return vr.mean(axis=1).where(vr.notna().sum(axis=1) >= min_assets)
 
 
-def state_proxies(returns: pd.DataFrame, p: ProxyParams) -> pd.DataFrame:
+def state_proxies(returns: pd.DataFrame, p: ProxyParams, min_assets: int = 1) -> pd.DataFrame:
     return pd.DataFrame(
         {
-            "vr_short": variance_ratio(returns, p.vr_short_q, p.vr_short_window),
-            "vr_long": variance_ratio(returns, p.vr_long_q, p.vr_long_window),
+            "vr_short": variance_ratio(returns, p.vr_short_q, p.vr_short_window, min_assets),
+            "vr_long": variance_ratio(returns, p.vr_long_q, p.vr_long_window, min_assets),
         }
     )
 

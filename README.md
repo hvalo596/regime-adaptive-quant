@@ -5,7 +5,7 @@
 核心问题：能否通过识别市场状态，在**动量**与**短期反转**之间做出有信息量的配置？
 这里不是为了找一个更花哨的模型，而是先检验金融机制：动量收的是"慢人"的迟到费，反转收的是"急人"的加急费，两者的强度会变、有粘性、当期可观测、来得及交易。四个环节（C1–C4）任一断掉都是一个具体的否定结论。
 
-当前进度：**阶段 1（回测框架 + 合成数据最小版本）**。尚未接入任何真实数据（Tushare 是下一阶段）。
+当前进度：**阶段 1（回测框架 + 合成数据）已完成；阶段 2（中国期货接入 + 实验第 2 步）管线已完成，真实数据待 `TUSHARE_TOKEN` 注入后运行**，见 [docs/phase2-china-futures-step2.md](docs/phase2-china-futures-step2.md)。
 
 ## 快速开始
 
@@ -16,6 +16,16 @@ python scripts/run_phase1_synthetic.py --seed 1 --n-seeds 20 --out artifacts/pha
 ```
 
 产物在 `artifacts/phase1/`：`summary.md`（总表）、各 CSV、3 张 PNG。
+
+## 阶段 2 快速开始
+
+```bash
+export TUSHARE_TOKEN=...   # 仅环境变量，不写文件
+python scripts/fetch_tushare_futures.py --group commodity --start 20100101
+python scripts/run_phase2_existence.py --raw-dir data/raw --out artifacts/phase2_real
+# 无 token：合成兜底（管线检查，不是证据）
+python scripts/run_phase2_existence.py --synthetic --out artifacts/phase2_synthetic/regime
+```
 
 ## 结构
 

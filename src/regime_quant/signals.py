@@ -36,12 +36,14 @@ def tranche_average(signal: pd.DataFrame, hold: int) -> pd.DataFrame:
 def vol_scaled_weights(
     signal: pd.DataFrame, vol: pd.DataFrame, params: StrategyParams
 ) -> pd.DataFrame:
-    """Per-asset inverse-vol sizing to a common annual vol target; equal risk across assets."""
-    n_assets = signal.shape[1]
+    """Per-asset inverse-vol sizing to a common annual vol target; equal risk across the assets that are live
+    on that day (unbalanced panels: n counts assets with a valid signal and vol, not the column count)."""
     daily_target = params.target_ann_vol / np.sqrt(TRADING_DAYS)
-    w = signal * (daily_target / vol) / n_assets
-    cap = params.max_leverage_per_asset / n_assets
-    return w.clip(-cap, cap)
+    raw = signal * (daily_target / vol)
+    n = raw.notna().sum(axis=1).replace(0, np.nan)
+    w = raw.div(n, axis=0)
+    cap = params.max_leverage_per_asset / n
+    return w.clip(lower=-cap, upper=cap, axis=0)
 
 
 def momentum_weights(returns: pd.DataFrame, params: StrategyParams) -> pd.DataFrame:
