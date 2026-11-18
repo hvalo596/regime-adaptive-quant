@@ -1,0 +1,9 @@
+stage,family,n_tests,counted_in_bonferroni_of,notes
+step2_primary_8_products,6 proxies x 1 universe,6,,first look at 8-product subset; superseded by full panel (kept for honesty)
+step2_primary_40_products,6 proxies x 1 universe,6,6,pre-registered signs; headline test
+sensitivity_costs,6 proxies x 3 extra cost scenarios,18,0,same hypotheses re-evaluated; reported as sensitivity
+sensitivity_sectors,6 proxies x 4 sectors,24,24,family denominator 24
+sensitivity_index_bond,2 VR proxies x 10 groups,20,20,family denominator 20
+param_grid_gross_edge,24 strategy variants,24,24,pre-registered grid; white reality check across the family
+param_grid_state_followup,6 proxies x 1 variant (best mom),6,6,only because best mom variant passed reality check; selection inflates it
+TOTAL_distinct_hypothesis_tests,,80,,upper bound counting the 8-product look and all families; Bonferroni over 80 would need p<0.000625

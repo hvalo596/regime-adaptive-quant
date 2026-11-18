@@ -71,8 +71,10 @@ def reality_check(gross: pd.DataFrame, families: dict[str, list[str]], n_boot: i
     idx = stationary_bootstrap_indices(n, mean_block, n_boot, rng)
     mu, sd = x.mean(0), x.std(0, ddof=1)
     obs = mu / sd * ann
-    xb = x[idx]  # (n_boot, n, k)
-    mub, sdb = xb.mean(1), xb.std(1, ddof=1)
+    mub, sdb = np.empty((n_boot, x.shape[1])), np.empty((n_boot, x.shape[1]))
+    for a in range(0, n_boot, 100):  # chunked: (n_boot, n, k) would be ~1 GB
+        xb = x[idx[a : a + 100]]
+        mub[a : a + 100], sdb[a : a + 100] = xb.mean(1), xb.std(1, ddof=1)
     null = (mub - mu) / sdb * ann  # centred bootstrap distribution of each variant's Sharpe
     rows = []
     cols = list(gross.columns)
@@ -91,7 +93,8 @@ def variant_intervals(gross: pd.DataFrame, n_boot: int = 1000, mean_block: int =
     x = gross.to_numpy()
     rng = np.random.default_rng(seed)
     idx = stationary_bootstrap_indices(len(x), mean_block, n_boot, rng)
-    xb = x[idx]
-    sh = xb.mean(1) / xb.std(1, ddof=1) * np.sqrt(252)
+    sh = np.concatenate([
+        (lambda xb: xb.mean(1) / xb.std(1, ddof=1) * np.sqrt(252))(x[idx[a : a + 100]]) for a in range(0, n_boot, 100)
+    ])
     lo, hi = np.quantile(sh, [0.025, 0.975], axis=0)
     return pd.DataFrame({"variant": gross.columns, "gross_sharpe_lo": lo, "gross_sharpe_hi": hi})
