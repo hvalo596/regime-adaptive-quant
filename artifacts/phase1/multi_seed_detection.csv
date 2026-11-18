@@ -1,0 +1,7 @@
+scenario,proxy,n_seeds,pass_rate,mean_diff,mean_seg_high,mean_seg_low
+null_const,vr_long,20,0.0,0.001050885524421865,30.45,32.95
+null_const,vr_short,20,0.0,-0.011671807400860568,44.75,46.8
+null_volonly,vr_long,20,0.05,0.0073783788627068535,32.0,32.2
+null_volonly,vr_short,20,0.0,-0.005974589790112001,47.4,48.5
+regime,vr_long,20,0.95,0.22829228155555112,23.3,24.3
+regime,vr_short,20,1.0,0.27761508650724387,40.6,31.35
