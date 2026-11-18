@@ -37,13 +37,25 @@ def run_leg(
     target_weights: pd.DataFrame,
     vol_hat: pd.DataFrame,
     cost: CostParams,
+    roll_mask: pd.DataFrame | None = None,
+    nan_when_flat: bool = False,
 ) -> LegResult:
+    """`nan_when_flat` (real, unbalanced panels): days on which no asset holds a valid position give NaN returns
+    instead of 0, so that a leg's rolling vol is never computed over a stretch of artificial zeros.
+    `roll_mask` (same shape as returns, True on the first day of holding a new contract) charges an extra
+    round trip -- two legs at fee_bps each -- on the position held that day."""
     w = target_weights.fillna(0.0)
     held = w.shift(1).fillna(0.0)
-    gross = (held * returns).sum(axis=1)
+    if nan_when_flat:
+        gross = (target_weights.shift(1) * returns).sum(axis=1, min_count=1)
+    else:
+        gross = (held * returns).sum(axis=1)
     dw = held.diff().fillna(held).abs()
     unit_cost = cost.fee_bps / 1e4 + cost.slip_vol_frac * vol_hat.shift(1).fillna(0.0)
     cost_series = (dw * unit_cost).sum(axis=1)
+    if roll_mask is not None:
+        rolled = held.abs() * roll_mask.reindex_like(held).fillna(False).astype(float)
+        cost_series = cost_series + (rolled * 2.0 * cost.fee_bps / 1e4).sum(axis=1)
     return LegResult(
         gross=gross.rename("gross"),
         cost=cost_series.rename("cost"),
@@ -53,10 +65,14 @@ def run_leg(
 
 
 def build_legs(
-    returns: pd.DataFrame, params: StrategyParams, cost: CostParams
+    returns: pd.DataFrame,
+    params: StrategyParams,
+    cost: CostParams,
+    roll_mask: pd.DataFrame | None = None,
+    nan_when_flat: bool = False,
 ) -> dict[str, LegResult]:
     vol = ex_ante_vol(returns, params.vol_window)
     return {
-        "mom": run_leg(returns, momentum_weights(returns, params), vol, cost),
-        "rev": run_leg(returns, reversal_weights(returns, params), vol, cost),
+        "mom": run_leg(returns, momentum_weights(returns, params), vol, cost, roll_mask, nan_when_flat),
+        "rev": run_leg(returns, reversal_weights(returns, params), vol, cost, roll_mask, nan_when_flat),
     }

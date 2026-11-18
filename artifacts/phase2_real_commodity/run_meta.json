@@ -1,0 +1,111 @@
+{
+  "source": "tushare",
+  "n_products_panel": 40,
+  "products": [
+    "RB",
+    "HC",
+    "SS",
+    "I",
+    "J",
+    "JM",
+    "CU",
+    "AL",
+    "ZN",
+    "PB",
+    "NI",
+    "SN",
+    "AU",
+    "AG",
+    "SC",
+    "FU",
+    "BU",
+    "TA",
+    "MA",
+    "PP",
+    "L",
+    "V",
+    "EG",
+    "EB",
+    "PG",
+    "SA",
+    "FG",
+    "RU",
+    "M",
+    "Y",
+    "P",
+    "A",
+    "C",
+    "CS",
+    "JD",
+    "SR",
+    "CF",
+    "RM",
+    "OI",
+    "AP"
+  ],
+  "first_date": "2015-04-08",
+  "last_date": "2026-11-17",
+  "n_days_with_D": 2684,
+  "n_primary_tests": 6,
+  "limit_locked_proxy_asset_days": 54,
+  "one_price_asset_days": 72,
+  "extreme_ret_asset_days": 28,
+  "stale_asset_days": 1,
+  "roll_days": 2185,
+  "kai_dims_status": "DRAFT (not Kai's formulas)",
+  "params": {
+    "strategy": {
+      "mom_lookback": 60,
+      "mom_hold": 20,
+      "rev_lookback": 5,
+      "rev_hold": 3,
+      "vol_window": 60,
+      "target_ann_vol": 0.1,
+      "max_leverage_per_asset": 4.0
+    },
+    "cost": {
+      "fee_bps": 1.0,
+      "slip_vol_frac": 0.05
+    },
+    "proxy": {
+      "vr_short_q": 5,
+      "vr_short_window": 60,
+      "vr_long_q": 20,
+      "vr_long_window": 120,
+      "bin_min_obs": 250
+    },
+    "inference": {
+      "n_boot": 300,
+      "mean_block": 20,
+      "ci_level": 0.95,
+      "min_segments_per_bin": 5,
+      "min_segment_len": 10
+    },
+    "existence": {
+      "n_boot": 1000,
+      "n_shift": 2000,
+      "n_panel_null": 100,
+      "null_mean_block": 20,
+      "block_lens": [
+        10,
+        20,
+        60
+      ],
+      "min_assets": 5,
+      "kai_window": 60,
+      "seed": 7
+    },
+    "roll": {
+      "rule": "auto",
+      "expiry_buffer_days": 10,
+      "switch_margin": 1.0,
+      "min_agreement": 0.8
+    },
+    "panel": {
+      "liq_window": 60,
+      "min_median_amount_wan": 10000.0,
+      "min_history_days": 250
+    }
+  },
+  "products_excluded": []
+}

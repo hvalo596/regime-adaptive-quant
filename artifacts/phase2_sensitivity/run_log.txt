@@ -1,0 +1,5 @@
+sector ferrous: ['RB', 'HC', 'SS', 'I', 'J', 'JM']
+sector nonferrous: ['CU', 'AL', 'ZN', 'PB', 'NI', 'SN']
+sector energy_chem: ['SC', 'FU', 'BU', 'TA', 'MA', 'PP', 'L', 'V', 'EG', 'EB', 'PG', 'SA', 'FG', 'RU']
+sector agri: ['M', 'Y', 'P', 'A', 'C', 'CS', 'JD', 'SR', 'CF', 'RM', 'OI', 'AP']
+index/bond groups: ['IF', 'IH', 'IC', 'IM', 'TS', 'TF', 'T', 'TL', 'IF+IH+IC', 'TS+TF+T']
