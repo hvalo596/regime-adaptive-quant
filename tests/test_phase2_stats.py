@@ -148,3 +148,19 @@ def test_end_to_end_synthetic_fallback_writes_artifacts(tmp_path):
     assert "SYNTHETIC FALLBACK" in text and "DRAFT" in text
     for f in ("existence_primary.csv", "existence_robustness.csv", "trials.csv", "run_meta.json", "d_by_proxy_bin.png"):
         assert (tmp_path / "out" / f).exists()
+
+
+def test_recognition_delay_matches_construction():
+    from regime_quant.recognition import recognition_stats
+
+    n = 3000
+    idx = pd.bdate_range("2010-01-01", periods=n)
+    rng = np.random.default_rng(0)
+    level = np.repeat(rng.integers(0, 3, n // 100), 100).astype(float)
+    sharp = pd.Series(level + rng.normal(0, 0.05, n), index=idx)
+    t = recognition_stats(sharp, min_obs=250, smooth=5, min_len=20).set_index("bin")
+    assert t.loc["high", "mean_delay"] < 5 and t.loc["high", "share_missed"] < 0.2
+    assert t.loc["high", "duration_over_delay"] > 10
+    noisy = pd.Series(level + rng.normal(0, 3.0, n), index=idx)
+    tn = recognition_stats(noisy, min_obs=250, smooth=5, min_len=20)
+    assert tn["causal_flips_per_year"].iloc[0] > t["causal_flips_per_year"].iloc[0]

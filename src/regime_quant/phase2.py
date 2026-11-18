@@ -29,6 +29,7 @@ from .existence import (  # noqa: E402
 )
 from .inference import performance_summary  # noqa: E402
 from .kai_dims import dependence_report  # noqa: E402
+from .recognition import recognition_table  # noqa: E402
 
 
 @dataclass
@@ -43,6 +44,7 @@ class Phase2Result:
     conditional: pd.DataFrame
     legs_perf: pd.DataFrame
     dependence: dict
+    recognition: pd.DataFrame
     ledger: TrialLedger
     meta: dict
 
@@ -151,7 +153,7 @@ def run_phase2(
     return Phase2Result(
         panel=panel, proxies=proxies, d_net=d_net, d_gross=d_gross, primary=primary, robustness=robustness,
         null_panel=null_panel, conditional=conditional_tables(proxies, d_net, pp, ip), legs_perf=legs_perf,
-        dependence=dependence_report(proxies), ledger=ledger, meta=meta,
+        dependence=dependence_report(proxies), recognition=recognition_table(proxies, min_obs=pp.bin_min_obs), ledger=ledger, meta=meta,
     )
 
 
@@ -172,6 +174,7 @@ def write_artifacts(res: Phase2Result, out: str | Path, plots: bool = True) -> N
     res.robustness.to_csv(out / "existence_robustness.csv", index=False)
     res.conditional.to_csv(out / "conditional_D_by_bin.csv", index=False)
     res.legs_perf.to_csv(out / "legs_performance.csv", index=False)
+    res.recognition.to_csv(out / "recognition_delay.csv", index=False)
     res.ledger.frame().to_csv(out / "trials.csv", index=False)
     res.dependence["corr"].to_csv(out / "dim_correlation.csv")
     res.dependence["vif"].to_csv(out / "dim_vif.csv")
@@ -222,6 +225,9 @@ def write_artifacts(res: Phase2Result, out: str | Path, plots: bool = True) -> N
         ]
     dep = res.dependence
     lines += [
+        "## Step 3 (rule baseline): recognition delay vs segment duration (reference = centered-smoothed proxy, ex-post)\n",
+        _fmt(res.recognition, ["proxy", "bin", "n_segments", "mean_duration", "mean_delay", "share_missed", "duration_over_delay", "causal_flips_per_year"], 2),
+        "",
         "## Kai-dimension dependence (draft definitions)\n",
         f"logit(sys_share) = 2*(sys_level - idio_level) holds exactly (max residual {dep['max_abs_identity_residual']:.2e}); "
         "the three carry two degrees of freedom.\n",
