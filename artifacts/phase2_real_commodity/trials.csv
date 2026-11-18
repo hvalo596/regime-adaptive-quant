@@ -1,0 +1,7 @@
+trial,universe,window,expected_sign
+vr_short,commodity,vr,1
+vr_long,commodity,vr,1
+sys_level,commodity,60,-1
+sys_share,commodity,60,-1
+idio_level,commodity,60,1
+idio_conc,commodity,60,1
