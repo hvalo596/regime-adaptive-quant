@@ -1,0 +1,5 @@
+state,days,segments_ge10d,mean_length
+I,404,5,79.8
+II,264,9,25.0
+III,28,1,12.0
+IV,1484,15,97.46666666666667

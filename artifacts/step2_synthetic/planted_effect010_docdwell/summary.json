@@ -1,0 +1,36 @@
+{
+  "source": "synthetic",
+  "notes": [
+    "synthetic fallback: plumbing check only"
+  ],
+  "calendar": {
+    "n_dates": 2500,
+    "first": "2012-01-02",
+    "last": "2021-07-30",
+    "weekend_dates": 0,
+    "gaps_over_5_days": 0,
+    "max_gap_days": 3
+  },
+  "H0_commodity": {
+    "theta_c": 0.00022076698533939315,
+    "ci": [
+      -0.00016053120882433093,
+      0.0005897485180567339
+    ],
+    "p_shift": 0.12987012987012986,
+    "p_pipeline": 0.039603960396039604,
+    "detect": false,
+    "benchmark_theta_planted_0.10": 0.00022819364408153777,
+    "power_planted_0.10_doc_dwell": 0.3,
+    "verdict": "UNDERPOWERED: not rejected, but the interval still contains the Theta of a planted 0.10 effect (2.28e-04); detection rate of such an effect at this sample is 30%"
+  },
+  "per_product_multiplicity": {
+    "n_products": 39,
+    "n_reject_5pct": 0,
+    "expected_by_chance": 1.9500000000000002,
+    "binomial_p_for_count": 1.0,
+    "n_holm_reject": 0
+  },
+  "seats": "fut_holding not fetched: seat signatures not computed",
+  "n_trials_in_ledger": 299
+}

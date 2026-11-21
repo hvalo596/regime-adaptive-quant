@@ -246,7 +246,13 @@ def state_battery(pr: PanelResult, ledger: Ledger, ip: InferenceParams = IP, see
     for h, k, sign in (("H1", "I", +1), ("H2", "II", -1)):
         r = mean_diff_test(D, masks[k], masks["IV"], ip, rng)
         ok = (r.ci_lo > 0) if sign > 0 else (r.ci_hi < 0)
-        add(h, f"D_{k}-D_IV", r.diff, r.ci_lo, r.ci_hi, r.p_shift, "supported" if ok and enough[k] else ("direction ok, CI includes 0" if np.sign(r.diff) == sign else "wrong sign"), f"segments {k}: {r.segs_a}, IV: {r.segs_b}")
+        if not (enough[k] and enough["IV"]):
+            vd = f"underpowered: fewer than {ip.min_segments} independent segments ({k}: {r.segs_a}, IV: {r.segs_b})"
+        elif ok:
+            vd = "supported"
+        else:
+            vd = "direction ok, CI includes 0" if np.sign(r.diff) == sign else "wrong sign" + (" (CI excludes 0)" if (r.ci_hi < 0 or r.ci_lo > 0) else "")
+        add(h, f"D_{k}-D_IV", r.diff, r.ci_lo, r.ci_hi, r.p_shift, vd, f"segments {k}: {r.segs_a}, IV: {r.segs_b}")
         leg = xm if k == "I" else xr
         mm, lo, hi = mean_ci(leg[masks[k] & np.isfinite(leg)], ip, rng)
         add(h, f"x_{'MOM' if k == 'I' else 'REV'}|{k}", mm, lo, hi, np.nan, "supported" if lo > 0 else "CI includes 0" if hi > 0 else "negative")
@@ -273,7 +279,8 @@ def state_battery(pr: PanelResult, ledger: Ledger, ip: InferenceParams = IP, see
     # H3
     for leg, nm in ((xm, "MOM"), (xr, "REV")):
         mm, lo, hi = mean_ci(leg[masks["III"] & np.isfinite(leg)], ip, rng)
-        add("H3", f"x_{nm}|III", mm, lo, hi, np.nan, "positive" if lo > 0 else "CI includes 0" if hi > 0 else "negative", f"III segments: {len(segments(lab, 'III', ip.min_segment_len))}")
+        n3 = len(segments(lab, "III", ip.min_segment_len))
+        add("H3", f"x_{nm}|III", mm, lo, hi, np.nan, ("underpowered: fewer than 5 segments; " if n3 < ip.min_segments else "") + ("positive" if lo > 0 else "CI includes 0" if hi > 0 else "negative"), f"III segments: {n3}")
 
     # H4: TOST on annualised Sharpe in IV
     for leg, nm in ((xm, "MOM"), (xr, "REV")):

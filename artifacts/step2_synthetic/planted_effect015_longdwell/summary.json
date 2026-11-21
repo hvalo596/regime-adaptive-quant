@@ -1,0 +1,36 @@
+{
+  "source": "synthetic",
+  "notes": [
+    "synthetic fallback: plumbing check only"
+  ],
+  "calendar": {
+    "n_dates": 2500,
+    "first": "2012-01-02",
+    "last": "2021-07-30",
+    "weekend_dates": 0,
+    "gaps_over_5_days": 0,
+    "max_gap_days": 3
+  },
+  "H0_commodity": {
+    "theta_c": 0.0008656388754639659,
+    "ci": [
+      0.00042023935369051377,
+      0.0013273072060208308
+    ],
+    "p_shift": 0.02097902097902098,
+    "p_pipeline": 0.009900990099009901,
+    "detect": true,
+    "benchmark_theta_planted_0.10": 0.0001955427903248473,
+    "power_planted_0.10_doc_dwell": 0.15,
+    "verdict": "FOUND: decision rule and pipeline-level null both reject"
+  },
+  "per_product_multiplicity": {
+    "n_products": 39,
+    "n_reject_5pct": 7,
+    "expected_by_chance": 1.9500000000000002,
+    "binomial_p_for_count": 0.0029228294784590034,
+    "n_holm_reject": 0
+  },
+  "seats": "fut_holding not fetched: seat signatures not computed",
+  "n_trials_in_ledger": 299
+}

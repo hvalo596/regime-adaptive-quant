@@ -1,0 +1,300 @@
+panel,hypothesis,spec,stat,value
+commodity,H0,M-B|R-A,theta_raw,0.0006126192223956101
+commodity,H0,M-B|R-A,theta_c,-0.0001782700064913178
+commodity,H0,M-B|R-A,lo_one_sided,-0.00036565617812785487
+commodity,H0,M-B|R-A,p_shift,0.973026973026973
+commodity,H0,M-B|R-A,detect,0.0
+commodity,H0,M-B|R-A,mean_s,0.7801743919229004
+commodity,H0,M-A|R-A,theta_raw,0.0005824867789819433
+commodity,H0,M-A|R-A,theta_c,0.00010655575944718882
+commodity,H0,M-A|R-A,lo_one_sided,-6.729160902668273e-05
+commodity,H0,M-A|R-A,p_shift,0.18681318681318682
+commodity,H0,M-A|R-A,detect,0.0
+commodity,H0,M-A|R-A,mean_s,0.5641497851442603
+commodity,H0,M-B|R-B-gap,theta_raw,0.0006020600725680045
+commodity,H0,M-B|R-B-gap,theta_c,3.318380861960671e-05
+commodity,H0,M-B|R-B-gap,lo_one_sided,-0.00010665861520002322
+commodity,H0,M-B|R-B-gap,p_shift,0.3626373626373626
+commodity,H0,M-B|R-B-gap,detect,0.0
+commodity,H0,M-B|R-B-gap,mean_s,0.7145479577787976
+commodity,H0,M-A|R-B-gap,theta_raw,0.00038838330697203206
+commodity,H0,M-A|R-B-gap,theta_c,-2.580209283360767e-05
+commodity,H0,M-A|R-B-gap,lo_one_sided,-0.0001969013518033663
+commodity,H0,M-A|R-B-gap,p_shift,0.5344655344655345
+commodity,H0,M-A|R-B-gap,detect,0.0
+commodity,H0,M-A|R-B-gap,mean_s,0.5138121546961326
+commodity,occupancy,main,share_I,0.7903669724770642
+commodity,occupancy,main,segments_I,9.0
+commodity,occupancy,main,share_II,0.010091743119266056
+commodity,occupancy,main,segments_II,1.0
+commodity,occupancy,main,share_III,0.022018348623853212
+commodity,occupancy,main,segments_III,3.0
+commodity,occupancy,main,share_IV,0.1775229357798165
+commodity,occupancy,main,segments_IV,7.0
+commodity,H0,main,theta_c,-0.0001782700064913178
+commodity,H1,main,D_I-D_IV,-0.0010949533628775983
+commodity,H1,main,x_MOM|I,0.00029867746779781824
+commodity,H2,main,D_II-D_IV,-0.0001407978809796382
+commodity,H2,main,x_REV|II,
+commodity,H2b,main,slope_xREV_on_zPhiPerp|II,
+commodity,H2c,main,worst5%_MOM_days_in_II_minus_share,-0.010096374483708122
+commodity,H3,main,x_MOM|III,0.00059302662155304
+commodity,H3,main,x_REV|III,-0.000751586366649775
+commodity,H4,main,sharpe_MOM|IV,2.0421027515366093
+commodity,H4,main,sharpe_REV|IV,-2.401301353773284
+commodity,H5,main,x_REV_F - x_REV_Fc,-0.3209081067799265
+commodity,H6,main,MOM_leg: b_tauM,-0.0004144397175448817
+commodity,H6,main,MOM_leg: b_tauR,-2.5692507551147203e-05
+commodity,H6,main,REV_leg: b_tauM,0.000412258764954971
+commodity,H6,main,REV_leg: b_tauR,-8.417507499761144e-07
+commodity,H7,main,deltaM: P(stay on)-occupancy,0.18422484839060804
+commodity,H7,main,deltaM: mean on-spell / ref detection delay,4.080645161290323
+commodity,H7,main,deltaR: P(stay on)-occupancy,0.8964613368283093
+commodity,H7,main,deltaR: mean on-spell / ref detection delay,0.45161290322580644
+commodity,H8,main,theta_c in zV low tercile,-0.00023424709193579712
+commodity,H8,main,theta_c in zV mid tercile,-0.0001162654429154174
+commodity,H8,main,theta_c in zV high tercile,-3.456820056045438e-05
+commodity,H8,main,"coef_s | controls zV, zPhiPerp",-0.0017152127737928855
+commodity,H0,main,p_pipeline,0.9207920792079208
+sector:ferrous,H0,M-B|R-A,theta_raw,0.00016025892172624878
+sector:ferrous,H0,M-B|R-A,theta_c,5.479375192301424e-05
+sector:ferrous,H0,M-B|R-A,lo_one_sided,-0.0002249333866813863
+sector:ferrous,H0,M-B|R-A,p_shift,0.3676323676323676
+sector:ferrous,H0,M-B|R-A,detect,0.0
+sector:ferrous,H0,M-B|R-A,mean_s,0.2771913721890776
+sector:ferrous,occupancy,main,share_I,0.34908256880733946
+sector:ferrous,occupancy,main,segments_I,7.0
+sector:ferrous,occupancy,main,share_II,0.07201834862385322
+sector:ferrous,occupancy,main,segments_II,6.0
+sector:ferrous,occupancy,main,share_III,0.03394495412844037
+sector:ferrous,occupancy,main,segments_III,3.0
+sector:ferrous,occupancy,main,share_IV,0.544954128440367
+sector:ferrous,occupancy,main,segments_IV,13.0
+sector:ferrous,H0,main,theta_c,5.479375192301424e-05
+sector:ferrous,H1,main,D_I-D_IV,0.00035231772296035445
+sector:ferrous,H1,main,x_MOM|I,0.00013795530316520015
+sector:ferrous,H2,main,D_II-D_IV,0.00040720593328738813
+sector:ferrous,H2,main,x_REV|II,-0.0003190228883598854
+sector:ferrous,H2b,main,slope_xREV_on_zPhiPerp|II,
+sector:ferrous,H2c,main,worst5%_MOM_days_in_II_minus_share,-0.007831216238405797
+sector:ferrous,H3,main,x_MOM|III,-0.0007332287982014135
+sector:ferrous,H3,main,x_REV|III,-0.0006197275197990718
+sector:ferrous,H4,main,sharpe_MOM|IV,0.27751230589294856
+sector:ferrous,H4,main,sharpe_REV|IV,-0.2789683089295484
+sector:ferrous,H5,main,x_REV_F - x_REV_Fc,
+sector:ferrous,H6,main,MOM_leg: b_tauM,
+sector:ferrous,H6,main,MOM_leg: b_tauR,
+sector:ferrous,H6,main,REV_leg: b_tauM,
+sector:ferrous,H6,main,REV_leg: b_tauR,
+sector:ferrous,H7,main,deltaM: P(stay on)-occupancy,0.6097868483217053
+sector:ferrous,H7,main,deltaM: mean on-spell / ref detection delay,2.2446236559139785
+sector:ferrous,H7,main,deltaR: P(stay on)-occupancy,0.8507466539576631
+sector:ferrous,H7,main,deltaR: mean on-spell / ref detection delay,0.7451612903225807
+sector:ferrous,H8,main,theta_c in zV low tercile,0.00024348747302956573
+sector:ferrous,H8,main,theta_c in zV mid tercile,0.00023687021882561282
+sector:ferrous,H8,main,theta_c in zV high tercile,-0.00023460522982711186
+sector:ferrous,H8,main,"coef_s | controls zV, zPhiPerp",
+sector:nonferrous,H0,M-B|R-A,theta_raw,0.0003553100125828168
+sector:nonferrous,H0,M-B|R-A,theta_c,8.909034248738026e-05
+sector:nonferrous,H0,M-B|R-A,lo_one_sided,-0.00015201364417563292
+sector:nonferrous,H0,M-B|R-A,p_shift,0.2897102897102897
+sector:nonferrous,H0,M-B|R-A,detect,0.0
+sector:nonferrous,H0,M-B|R-A,mean_s,0.4306800210859251
+sector:nonferrous,occupancy,main,share_I,0.4857744994731296
+sector:nonferrous,occupancy,main,segments_I,10.0
+sector:nonferrous,occupancy,main,share_II,0.0547945205479452
+sector:nonferrous,occupancy,main,segments_II,4.0
+sector:nonferrous,occupancy,main,share_III,0.09009483667017913
+sector:nonferrous,occupancy,main,segments_III,5.0
+sector:nonferrous,occupancy,main,share_IV,0.36933614330874603
+sector:nonferrous,occupancy,main,segments_IV,7.0
+sector:nonferrous,H0,main,theta_c,8.909034248738026e-05
+sector:nonferrous,H1,main,D_I-D_IV,0.0004555527355366983
+sector:nonferrous,H1,main,x_MOM|I,0.0005204078650131395
+sector:nonferrous,H2,main,D_II-D_IV,0.0005393115568777225
+sector:nonferrous,H2,main,x_REV|II,-8.372964548979182e-05
+sector:nonferrous,H2b,main,slope_xREV_on_zPhiPerp|II,
+sector:nonferrous,H2c,main,worst5%_MOM_days_in_II_minus_share,-0.012718142219016175
+sector:nonferrous,H3,main,x_MOM|III,0.00033107956819544785
+sector:nonferrous,H3,main,x_REV|III,9.195358449956032e-05
+sector:nonferrous,H4,main,sharpe_MOM|IV,0.4711558537157029
+sector:nonferrous,H4,main,sharpe_REV|IV,-0.37392761181677925
+sector:nonferrous,H5,main,x_REV_F - x_REV_Fc,
+sector:nonferrous,H6,main,MOM_leg: b_tauM,
+sector:nonferrous,H6,main,MOM_leg: b_tauR,
+sector:nonferrous,H6,main,REV_leg: b_tauM,
+sector:nonferrous,H6,main,REV_leg: b_tauR,
+sector:nonferrous,H7,main,deltaM: P(stay on)-occupancy,0.41955190927793673
+sector:nonferrous,H7,main,deltaM: mean on-spell / ref detection delay,2.9381720430107525
+sector:nonferrous,H7,main,deltaR: P(stay on)-occupancy,0.8223833700546029
+sector:nonferrous,H7,main,deltaR: mean on-spell / ref detection delay,0.9856630824372761
+sector:nonferrous,H8,main,theta_c in zV low tercile,-0.0003046199623375601
+sector:nonferrous,H8,main,theta_c in zV mid tercile,0.00021253382938617594
+sector:nonferrous,H8,main,theta_c in zV high tercile,-6.636461220370295e-06
+sector:nonferrous,H8,main,"coef_s | controls zV, zPhiPerp",
+sector:energy_chem,H0,M-B|R-A,theta_raw,0.00028603451925879954
+sector:energy_chem,H0,M-B|R-A,theta_c,-3.9867220964638584e-05
+sector:energy_chem,H0,M-B|R-A,lo_one_sided,-0.00022734975432856452
+sector:energy_chem,H0,M-B|R-A,p_shift,0.6263736263736264
+sector:energy_chem,H0,M-B|R-A,detect,0.0
+sector:energy_chem,H0,M-B|R-A,mean_s,0.35933914639743003
+sector:energy_chem,occupancy,main,share_I,0.3889908256880734
+sector:energy_chem,occupancy,main,segments_I,11.0
+sector:energy_chem,occupancy,main,share_II,0.02981651376146789
+sector:energy_chem,occupancy,main,segments_II,3.0
+sector:energy_chem,occupancy,main,share_III,0.05045871559633028
+sector:energy_chem,occupancy,main,segments_III,3.0
+sector:energy_chem,occupancy,main,share_IV,0.5307339449541284
+sector:energy_chem,occupancy,main,segments_IV,10.0
+sector:energy_chem,H0,main,theta_c,-3.9867220964638584e-05
+sector:energy_chem,H1,main,D_I-D_IV,-2.773274463780122e-05
+sector:energy_chem,H1,main,x_MOM|I,0.00040218888655727127
+sector:energy_chem,H2,main,D_II-D_IV,-0.00024432825936918285
+sector:energy_chem,H2,main,x_REV|II,-0.0003838358908877454
+sector:energy_chem,H2b,main,slope_xREV_on_zPhiPerp|II,-0.00014998462663122044
+sector:energy_chem,H2c,main,worst5%_MOM_days_in_II_minus_share,-0.011481573485017535
+sector:energy_chem,H3,main,x_MOM|III,0.0012661339074179886
+sector:energy_chem,H3,main,x_REV|III,-0.001924020949187787
+sector:energy_chem,H4,main,sharpe_MOM|IV,0.787067381798892
+sector:energy_chem,H4,main,sharpe_REV|IV,-1.1495154594583716
+sector:energy_chem,H5,main,x_REV_F - x_REV_Fc,-0.2246830631161412
+sector:energy_chem,H6,main,MOM_leg: b_tauM,2.4439124780293808e-06
+sector:energy_chem,H6,main,MOM_leg: b_tauR,9.534536607033858e-05
+sector:energy_chem,H6,main,REV_leg: b_tauM,6.535374911267874e-05
+sector:energy_chem,H6,main,REV_leg: b_tauR,-1.507460091244629e-05
+sector:energy_chem,H7,main,deltaM: P(stay on)-occupancy,0.5542808662391072
+sector:energy_chem,H7,main,deltaM: mean on-spell / ref detection delay,2.207373271889401
+sector:energy_chem,H7,main,deltaR: P(stay on)-occupancy,0.8565063798376041
+sector:energy_chem,H7,main,deltaR: mean on-spell / ref detection delay,0.47043010752688175
+sector:energy_chem,H8,main,theta_c in zV low tercile,-0.00013508940102874327
+sector:energy_chem,H8,main,theta_c in zV mid tercile,-0.0002152386789162712
+sector:energy_chem,H8,main,theta_c in zV high tercile,0.00015061636544522845
+sector:energy_chem,H8,main,"coef_s | controls zV, zPhiPerp",-0.00011201047437538706
+sector:agri,H0,M-B|R-A,theta_raw,0.00013483380470733747
+sector:agri,H0,M-B|R-A,theta_c,-0.00025463316590659704
+sector:agri,H0,M-B|R-A,lo_one_sided,-0.0004488578445751666
+sector:agri,H0,M-B|R-A,p_shift,0.9230769230769231
+sector:agri,H0,M-B|R-A,detect,0.0
+sector:agri,H0,M-B|R-A,mean_s,0.5575952271684259
+sector:agri,occupancy,main,share_I,0.591743119266055
+sector:agri,occupancy,main,segments_I,13.0
+sector:agri,occupancy,main,share_II,0.03394495412844037
+sector:agri,occupancy,main,segments_II,5.0
+sector:agri,occupancy,main,share_III,0.04954128440366973
+sector:agri,occupancy,main,segments_III,3.0
+sector:agri,occupancy,main,share_IV,0.3247706422018349
+sector:agri,occupancy,main,segments_IV,10.0
+sector:agri,H0,main,theta_c,-0.00025463316590659704
+sector:agri,H1,main,D_I-D_IV,-0.0008456289174551367
+sector:agri,H1,main,x_MOM|I,-0.00010463922491093136
+sector:agri,H2,main,D_II-D_IV,-0.00016065063641345983
+sector:agri,H2,main,x_REV|II,-0.0008160416691589802
+sector:agri,H2b,main,slope_xREV_on_zPhiPerp|II,
+sector:agri,H2c,main,worst5%_MOM_days_in_II_minus_share,0.002736715352131061
+sector:agri,H3,main,x_MOM|III,0.0012038106317104915
+sector:agri,H3,main,x_REV|III,-0.0014387015959166705
+sector:agri,H4,main,sharpe_MOM|IV,1.1800459929051872
+sector:agri,H4,main,sharpe_REV|IV,-1.5374398243323202
+sector:agri,H5,main,x_REV_F - x_REV_Fc,-0.2932884434884473
+sector:agri,H6,main,MOM_leg: b_tauM,-0.0002069069783880678
+sector:agri,H6,main,MOM_leg: b_tauR,7.0866557179027165e-06
+sector:agri,H6,main,REV_leg: b_tauM,0.00022696851391100397
+sector:agri,H6,main,REV_leg: b_tauR,2.1883986806950953e-05
+sector:agri,H7,main,deltaM: P(stay on)-occupancy,0.3537048590360734
+sector:agri,H7,main,deltaM: mean on-spell / ref detection delay,2.818548387096774
+sector:agri,H7,main,deltaR: P(stay on)-occupancy,0.850579695533824
+sector:agri,H7,main,deltaR: mean on-spell / ref detection delay,0.48924731182795694
+sector:agri,H8,main,theta_c in zV low tercile,-0.00012031290313215646
+sector:agri,H8,main,theta_c in zV mid tercile,-0.00025622554285756647
+sector:agri,H8,main,theta_c in zV high tercile,-0.000256272181054113
+sector:agri,H8,main,"coef_s | controls zV, zPhiPerp",-0.0010231365047567293
+panel:index,H0,M-B|R-A,theta_raw,0.00020916338038073727
+panel:index,H0,M-B|R-A,theta_c,0.00014982277636547205
+panel:index,H0,M-B|R-A,lo_one_sided,-3.138616753401929e-05
+panel:index,H0,M-B|R-A,p_shift,0.0999000999000999
+panel:index,H0,M-B|R-A,detect,0.0
+panel:index,H0,M-B|R-A,mean_s,0.21661312528682883
+panel:bond,H0,M-B|R-A,theta_raw,-0.0001555991166742847
+panel:bond,H0,M-B|R-A,theta_c,-0.00020016477353369653
+panel:bond,H0,M-B|R-A,lo_one_sided,-0.0005281166170194055
+panel:bond,H0,M-B|R-A,p_shift,0.8291708291708292
+panel:bond,H0,M-B|R-A,detect,0.0
+panel:bond,H0,M-B|R-A,mean_s,0.3806386213887481
+product:RB,H0,M-B|R-A (N=1),theta_c,-0.0002093542049606299
+product:RB,H0,M-B|R-A (N=1),p_shift,0.9460539460539461
+product:HC,H0,M-B|R-A (N=1),theta_c,-0.00022356564010581244
+product:HC,H0,M-B|R-A (N=1),p_shift,0.958041958041958
+product:SS,H0,M-B|R-A (N=1),theta_c,0.00011881354256797883
+product:SS,H0,M-B|R-A (N=1),p_shift,0.34865134865134867
+product:I,H0,M-B|R-A (N=1),theta_c,7.982801472816473e-06
+product:I,H0,M-B|R-A (N=1),p_shift,0.4015984015984016
+product:J,H0,M-B|R-A (N=1),theta_c,7.517616815822862e-05
+product:J,H0,M-B|R-A (N=1),p_shift,0.3646353646353646
+product:JM,H0,M-B|R-A (N=1),theta_c,-0.00019401012305659477
+product:JM,H0,M-B|R-A (N=1),p_shift,0.8621378621378621
+product:CU,H0,M-B|R-A (N=1),theta_c,-0.00022469613071550063
+product:CU,H0,M-B|R-A (N=1),p_shift,0.935064935064935
+product:AL,H0,M-B|R-A (N=1),theta_c,-5.302919293045167e-05
+product:AL,H0,M-B|R-A (N=1),p_shift,0.4935064935064935
+product:ZN,H0,M-B|R-A (N=1),theta_c,-3.032665631426469e-05
+product:ZN,H0,M-B|R-A (N=1),p_shift,0.5464535464535465
+product:PB,H0,M-B|R-A (N=1),theta_c,-0.0001871278159704085
+product:PB,H0,M-B|R-A (N=1),p_shift,0.7592407592407593
+product:NI,H0,M-B|R-A (N=1),theta_c,5.0813727967739606e-05
+product:NI,H0,M-B|R-A (N=1),p_shift,0.38461538461538464
+product:SN,H0,M-B|R-A (N=1),theta_c,5.723500437189631e-05
+product:SN,H0,M-B|R-A (N=1),p_shift,0.3106893106893107
+product:AU,H0,M-B|R-A (N=1),theta_c,-8.694743149779348e-06
+product:AU,H0,M-B|R-A (N=1),p_shift,0.4145854145854146
+product:AG,H0,M-B|R-A (N=1),theta_c,-0.00014693305668777085
+product:AG,H0,M-B|R-A (N=1),p_shift,0.9500499500499501
+product:SC,H0,M-B|R-A (N=1),theta_c,-3.5180025875365746e-05
+product:SC,H0,M-B|R-A (N=1),p_shift,0.6083916083916084
+product:FU,H0,M-B|R-A (N=1),theta_c,-0.00030349742485992313
+product:FU,H0,M-B|R-A (N=1),p_shift,0.948051948051948
+product:TA,H0,M-B|R-A (N=1),theta_c,2.3097192945615098e-05
+product:TA,H0,M-B|R-A (N=1),p_shift,0.5094905094905094
+product:MA,H0,M-B|R-A (N=1),theta_c,5.488962864255099e-05
+product:MA,H0,M-B|R-A (N=1),p_shift,0.32167832167832167
+product:PP,H0,M-B|R-A (N=1),theta_c,1.7953789594802847e-05
+product:PP,H0,M-B|R-A (N=1),p_shift,0.4225774225774226
+product:L,H0,M-B|R-A (N=1),theta_c,-0.00014669864862004107
+product:L,H0,M-B|R-A (N=1),p_shift,0.8551448551448552
+product:V,H0,M-B|R-A (N=1),theta_c,-5.448421786586394e-05
+product:V,H0,M-B|R-A (N=1),p_shift,0.7292707292707292
+product:EG,H0,M-B|R-A (N=1),theta_c,-0.00014776417715428933
+product:EG,H0,M-B|R-A (N=1),p_shift,0.8261738261738262
+product:EB,H0,M-B|R-A (N=1),theta_c,0.00011961517105776577
+product:EB,H0,M-B|R-A (N=1),p_shift,0.1938061938061938
+product:PG,H0,M-B|R-A (N=1),theta_c,-4.680065118833239e-05
+product:PG,H0,M-B|R-A (N=1),p_shift,0.5544455544455544
+product:SA,H0,M-B|R-A (N=1),theta_c,-0.0002704097027432227
+product:SA,H0,M-B|R-A (N=1),p_shift,0.8021978021978022
+product:FG,H0,M-B|R-A (N=1),theta_c,-5.9986624133999506e-05
+product:FG,H0,M-B|R-A (N=1),p_shift,0.6493506493506493
+product:RU,H0,M-B|R-A (N=1),theta_c,0.0004974480219605449
+product:RU,H0,M-B|R-A (N=1),p_shift,0.06593406593406594
+product:M,H0,M-B|R-A (N=1),theta_c,0.0003651131668520865
+product:M,H0,M-B|R-A (N=1),p_shift,0.02197802197802198
+product:Y,H0,M-B|R-A (N=1),theta_c,6.288189430978829e-05
+product:Y,H0,M-B|R-A (N=1),p_shift,0.32367632367632365
+product:P,H0,M-B|R-A (N=1),theta_c,-4.295429245529849e-05
+product:P,H0,M-B|R-A (N=1),p_shift,0.5794205794205795
+product:A,H0,M-B|R-A (N=1),theta_c,-0.0001175596213182168
+product:A,H0,M-B|R-A (N=1),p_shift,0.7962037962037962
+product:C,H0,M-B|R-A (N=1),theta_c,6.423814277411933e-05
+product:C,H0,M-B|R-A (N=1),p_shift,0.2967032967032967
+product:CS,H0,M-B|R-A (N=1),theta_c,-9.581789547622641e-05
+product:CS,H0,M-B|R-A (N=1),p_shift,0.8911088911088911
+product:JD,H0,M-B|R-A (N=1),theta_c,0.00014142758898171164
+product:JD,H0,M-B|R-A (N=1),p_shift,0.2177822177822178
+product:SR,H0,M-B|R-A (N=1),theta_c,8.496207019541424e-05
+product:SR,H0,M-B|R-A (N=1),p_shift,0.24175824175824176
+product:CF,H0,M-B|R-A (N=1),theta_c,-0.00023340412698152067
+product:CF,H0,M-B|R-A (N=1),p_shift,0.9210789210789211
+product:RM,H0,M-B|R-A (N=1),theta_c,-8.481861239161095e-05
+product:RM,H0,M-B|R-A (N=1),p_shift,0.6983016983016983
+product:OI,H0,M-B|R-A (N=1),theta_c,-2.2161973510302323e-05
+product:OI,H0,M-B|R-A (N=1),p_shift,0.5724275724275725
+product:AP,H0,M-B|R-A (N=1),theta_c,-0.00016403500964202268
+product:AP,H0,M-B|R-A (N=1),p_shift,0.926073926073926

@@ -10,7 +10,7 @@
 | 步骤 | 状态 |
 |---|---|
 | 第 1 步：资产、回测引擎、合成世界、状态变量构造、假阳性校准 | 完成，见 `artifacts/step1/`（通过标准与数字见报告） |
-| 第 2 步：真实中国期货上的状态存在性检验 | 进行中（见 Step 2 的 PR，叠在本 PR 之上） |
+| 第 2 步：真实中国期货上的状态存在性检验 | 代码、测试、合成回退验证完成（`artifacts/step2_synthetic/`）；**真实数据运行被阻塞：环境里没有 `TUSHARE_TOKEN`**（见 `docs`/报告） |
 | 第 3 步及以后（HMM 等） | 未开始 |
 
 早先的阶段 1/2（PR #1、#2：VR 与刑凯四维草案的三分位检验）已被本版取代；其产物仍留在 `artifacts/phase*`，仅供对照，结论不再沿用。
@@ -24,7 +24,18 @@ python scripts/run_step1.py --out artifacts/step1 --scale 0.1   # 第 1 步（--
 python scripts/summarize_step1.py artifacts/step1               # 验收判定 → acceptance.json、summary.md
 ```
 
-真实数据（第 2 步）的抓取与运行脚本在第 2 步 PR 中。
+真实数据（第 2 步；只用 Tushare 官方接口，token 只放环境变量，绝不写文件）：
+
+```bash
+export TUSHARE_TOKEN=...
+python scripts/fetch_tushare_futures.py --group all --start 20100101       # 合约表、逐合约日线、官方映射 → data/raw（已 gitignore，可断点续跑）
+python scripts/fetch_tushare_futures.py --group all --start 20100101 --all-days-extras   # 另取每日 fut_holding 与 fut_settle（慢，1-2 小时）
+python scripts/run_step2.py --raw-dir data/raw --out artifacts/step2
+python scripts/run_step2.py --synthetic --kind regime --out /tmp/s2          # 无 token：同一条代码路径走合成数据（管线检查，不是证据）
+python scripts/run_step2_validation.py 0.5 artifacts/step2_synthetic         # 合成回退验证：植入状态应被找到，无状态不应被找到
+```
+
+没有 token 且没有缓存数据时，`run_step2.py` 写 `BLOCKED.md` 并以退出码 3 结束，不编造任何数据。
 
 ## 代码结构（`src/regime_quant/`）
 
@@ -42,7 +53,12 @@ world.py         §7 合成世界与无状态对照 N0/N0z/N1/N2/N2c/N2b/N3/N4
 nullcal.py       偏差 b、标准误倍数、C 零分布（一次性校准后固定）
 recovery.py      找回 AUC、识别延迟与 d* 公式
 step1.py         第 1 步实验任务
-data/            Tushare 客户端、缓存、自己做的换月、面板、标记
+step2.py         第 2 步：数据集构造、面板/行业/单品种分析、H 系列检验、流水线零分布、H12
+step2_run.py     第 2 步总调度（校准、功效、签名、H10/H11、替代通道、审计、产物）
+nondefining.py   §5 非定义变量：g^OI、AV、Amihud、Llorente b2、席位、保证金/涨跌停事件
+altchannels.py   §6 替代通道：结算价、涨跌停剔除、Roll 价差、风险溢价控制
+audit.py         极端日清单、夜盘起始日断点检验、日历检查
+data/            Tushare 客户端、缓存、自己做的换月、面板、标记、产品级活跃度、合成回退（fake_tushare）
 ```
 
 ## 设计要点

@@ -1,0 +1,161 @@
+panel,hypothesis,stat,value,ci_lo,ci_hi,p,verdict,note
+commodity,occupancy,share_I,0.7903669724770642,,,,,segments>=10d: 9
+commodity,occupancy,segments_I,9.0,,,,,
+commodity,occupancy,share_II,0.010091743119266056,,,,,segments>=10d: 1
+commodity,occupancy,segments_II,1.0,,,,,
+commodity,occupancy,share_III,0.022018348623853212,,,,,segments>=10d: 3
+commodity,occupancy,segments_III,3.0,,,,,
+commodity,occupancy,share_IV,0.1775229357798165,,,,,segments>=10d: 7
+commodity,occupancy,segments_IV,7.0,,,,,
+commodity,H0,theta_c,-0.0001782700064913178,-0.0003972704821208304,1.566750962279383e-05,0.973026973026973,not rejected,"mean s=0.780, raw theta=6.13e-04, boot one-sided lo=-3.66e-04"
+commodity,H1,D_I-D_IV,-0.0010949533628775983,-0.002423101170676583,0.00020993669933659526,0.08091908091908091,wrong sign,"segments I: 9, IV: 7"
+commodity,H1,x_MOM|I,0.00029867746779781824,-9.104922205505523e-06,0.000567920174290965,,CI includes 0,
+commodity,H2,D_II-D_IV,-0.0001407978809796382,-0.0017211883279607207,0.0018686251362574435,0.961038961038961,"underpowered: fewer than 5 independent segments (II: 1, IV: 7)","segments II: 1, IV: 7"
+commodity,H2,x_REV|II,,,,,negative,
+commodity,H2b,slope_xREV_on_zPhiPerp|II,,,,,too few II days,
+commodity,H2c,worst5%_MOM_days_in_II_minus_share,-0.010096374483708122,,,1.0,not significant,0/109 vs II share 0.010
+commodity,H3,x_MOM|III,0.00059302662155304,-2.5516457715393735e-05,0.0012135361127121663,,underpowered: fewer than 5 segments; CI includes 0,III segments: 3
+commodity,H3,x_REV|III,-0.000751586366649775,-0.0015814738439467475,6.503383091938173e-05,,underpowered: fewer than 5 segments; CI includes 0,III segments: 3
+commodity,H4,sharpe_MOM|IV,2.0421027515366093,1.0250610556991637,3.097718560623068,,not shown equivalent (significantly > 0),"TOST at 5% = 90% CI inside (-0.3, 0.3)"
+commodity,H4,sharpe_REV|IV,-2.401301353773284,-3.826551135901172,-1.0395451796148196,,not shown equivalent,"TOST at 5% = 90% CI inside (-0.3, 0.3)"
+commodity,H5,x_REV_F - x_REV_Fc,-0.3209081067799265,-0.43468669258658865,-0.1957955560298886,0.0012110248084826762,supported,"events 16, days 385"
+commodity,H6,MOM_leg: b_tauM,-0.0004144397175448817,-0.0009148516655904204,4.993444310401413e-05,,,
+commodity,H6,MOM_leg: b_tauR,-2.5692507551147203e-05,-0.0002317649288110147,0.0001601811761378388,,,
+commodity,H6,REV_leg: b_tauM,0.000412258764954971,-8.093985160541143e-05,0.0009032958994436061,,,
+commodity,H6,REV_leg: b_tauR,-8.417507499761144e-07,-0.00027021257655755564,0.0001699159707491415,,,
+commodity,H7,deltaM: P(stay on)-occupancy,0.18422484839060804,,,,,"occupancy 0.812, P(stay) 0.997"
+commodity,H7,deltaM: mean on-spell / ref detection delay,4.080645161290323,,,,>=2,"mean spell 253.0d, ref delay 62d"
+commodity,H7,deltaR: P(stay on)-occupancy,0.8964613368283093,,,,,"occupancy 0.032, P(stay) 0.929"
+commodity,H7,deltaR: mean on-spell / ref detection delay,0.45161290322580644,,,,<2,"mean spell 14.0d, ref delay 31d"
+commodity,H8,theta_c in zV low tercile,-0.00023424709193579712,-0.0006525174480808086,0.00012310109260370368,0.8231768231768232,not significant,n=647
+commodity,H8,theta_c in zV mid tercile,-0.0001162654429154174,-0.0005700512300068542,0.00034262353255763944,0.6473526473526473,not significant,n=646
+commodity,H8,theta_c in zV high tercile,-3.456820056045438e-05,-0.00016688474663848664,7.402175657420567e-05,0.6443556443556444,not significant,n=645
+commodity,H8,"coef_s | controls zV, zPhiPerp",-0.0017152127737928855,-0.0035420284859414434,-0.00023460845895421656,,CI includes 0,
+sector:ferrous,occupancy,share_I,0.34908256880733946,,,,,segments>=10d: 7
+sector:ferrous,occupancy,segments_I,7.0,,,,,
+sector:ferrous,occupancy,share_II,0.07201834862385322,,,,,segments>=10d: 6
+sector:ferrous,occupancy,segments_II,6.0,,,,,
+sector:ferrous,occupancy,share_III,0.03394495412844037,,,,,segments>=10d: 3
+sector:ferrous,occupancy,segments_III,3.0,,,,,
+sector:ferrous,occupancy,share_IV,0.544954128440367,,,,,segments>=10d: 13
+sector:ferrous,occupancy,segments_IV,13.0,,,,,
+sector:ferrous,H0,theta_c,5.479375192301424e-05,-0.00025846347924702874,0.00035917344962023694,0.3676323676323676,not rejected,"mean s=0.277, raw theta=1.60e-04, boot one-sided lo=-2.25e-04"
+sector:ferrous,H1,D_I-D_IV,0.00035231772296035445,-0.0008220805065715846,0.0016576321506367173,0.7062937062937062,"direction ok, CI includes 0","segments I: 7, IV: 13"
+sector:ferrous,H1,x_MOM|I,0.00013795530316520015,-0.0003813184716215337,0.0006016807868962357,,CI includes 0,
+sector:ferrous,H2,D_II-D_IV,0.00040720593328738813,-0.0012984816131778785,0.0020748040818485396,0.7332667332667333,wrong sign,"segments II: 6, IV: 13"
+sector:ferrous,H2,x_REV|II,-0.0003190228883598854,-0.0014026973314839606,0.0007361789028029744,,CI includes 0,
+sector:ferrous,H2b,slope_xREV_on_zPhiPerp|II,,,,,too few II days,
+sector:ferrous,H2c,worst5%_MOM_days_in_II_minus_share,-0.007831216238405797,,,0.6772252128110648,not significant,7/109 vs II share 0.072
+sector:ferrous,H3,x_MOM|III,-0.0007332287982014135,-0.002122280891656322,0.000542627093253229,,underpowered: fewer than 5 segments; CI includes 0,III segments: 3
+sector:ferrous,H3,x_REV|III,-0.0006197275197990718,-0.00191673459236546,0.0005759622016121435,,underpowered: fewer than 5 segments; CI includes 0,III segments: 3
+sector:ferrous,H4,sharpe_MOM|IV,0.27751230589294856,-0.34001645731646923,0.9131470393184653,,not shown equivalent,"TOST at 5% = 90% CI inside (-0.3, 0.3)"
+sector:ferrous,H4,sharpe_REV|IV,-0.2789683089295484,-1.0312608668418515,0.4650222879136016,,not shown equivalent,"TOST at 5% = 90% CI inside (-0.3, 0.3)"
+sector:ferrous,H5,x_REV_F - x_REV_Fc,,,,1.0,underpowered (events<5),"events 0, days 0"
+sector:ferrous,H6,MOM_leg: b_tauM,,,,,,
+sector:ferrous,H6,MOM_leg: b_tauR,,,,,,
+sector:ferrous,H6,REV_leg: b_tauM,,,,,,
+sector:ferrous,H6,REV_leg: b_tauR,,,,,,
+sector:ferrous,H7,deltaM: P(stay on)-occupancy,0.6097868483217053,,,,,"occupancy 0.383, P(stay) 0.993"
+sector:ferrous,H7,deltaM: mean on-spell / ref detection delay,2.2446236559139785,,,,>=2,"mean spell 139.2d, ref delay 62d"
+sector:ferrous,H7,deltaR: P(stay on)-occupancy,0.8507466539576631,,,,,"occupancy 0.106, P(stay) 0.957"
+sector:ferrous,H7,deltaR: mean on-spell / ref detection delay,0.7451612903225807,,,,<2,"mean spell 23.1d, ref delay 31d"
+sector:ferrous,H8,theta_c in zV low tercile,0.00024348747302956573,-0.00037818782367333623,0.0008331254638220465,0.2957042957042957,not significant,n=647
+sector:ferrous,H8,theta_c in zV mid tercile,0.00023687021882561282,-0.0001805435576321126,0.0006816602683961572,0.17382617382617382,not significant,n=646
+sector:ferrous,H8,theta_c in zV high tercile,-0.00023460522982711186,-0.0008931328564134719,0.0005361529478303341,0.7812187812187812,not significant,n=645
+sector:ferrous,H8,"coef_s | controls zV, zPhiPerp",,,,,CI includes 0,
+sector:nonferrous,occupancy,share_I,0.4857744994731296,,,,,segments>=10d: 10
+sector:nonferrous,occupancy,segments_I,10.0,,,,,
+sector:nonferrous,occupancy,share_II,0.0547945205479452,,,,,segments>=10d: 4
+sector:nonferrous,occupancy,segments_II,4.0,,,,,
+sector:nonferrous,occupancy,share_III,0.09009483667017913,,,,,segments>=10d: 5
+sector:nonferrous,occupancy,segments_III,5.0,,,,,
+sector:nonferrous,occupancy,share_IV,0.36933614330874603,,,,,segments>=10d: 7
+sector:nonferrous,occupancy,segments_IV,7.0,,,,,
+sector:nonferrous,H0,theta_c,8.909034248738026e-05,-0.00021186521336223954,0.00034546551793083167,0.2897102897102897,not rejected,"mean s=0.431, raw theta=3.55e-04, boot one-sided lo=-1.52e-04"
+sector:nonferrous,H1,D_I-D_IV,0.0004555527355366983,-0.000957404147988684,0.001569121757056307,0.48451548451548454,"direction ok, CI includes 0","segments I: 10, IV: 7"
+sector:nonferrous,H1,x_MOM|I,0.0005204078650131395,0.00010648387849030566,0.000968253937792008,,supported,
+sector:nonferrous,H2,D_II-D_IV,0.0005393115568777225,-0.0010409021661674843,0.0026444246668145197,0.6873126873126874,"underpowered: fewer than 5 independent segments (II: 4, IV: 7)","segments II: 4, IV: 7"
+sector:nonferrous,H2,x_REV|II,-8.372964548979182e-05,-0.0007147436631799809,0.000607603890229753,,CI includes 0,
+sector:nonferrous,H2b,slope_xREV_on_zPhiPerp|II,,,,,too few II days,
+sector:nonferrous,H2c,worst5%_MOM_days_in_II_minus_share,-0.012718142219016175,,,0.7709863414250882,not significant,4/95 vs II share 0.055
+sector:nonferrous,H3,x_MOM|III,0.00033107956819544785,-0.0004100263158300723,0.0011494437358854181,,CI includes 0,III segments: 5
+sector:nonferrous,H3,x_REV|III,9.195358449956032e-05,-0.0003306123799360253,0.0005333873400193184,,CI includes 0,III segments: 5
+sector:nonferrous,H4,sharpe_MOM|IV,0.4711558537157029,-0.44236383236049476,1.3218346257580986,,not shown equivalent,"TOST at 5% = 90% CI inside (-0.3, 0.3)"
+sector:nonferrous,H4,sharpe_REV|IV,-0.37392761181677925,-1.4010617779700918,0.5325241459212001,,not shown equivalent,"TOST at 5% = 90% CI inside (-0.3, 0.3)"
+sector:nonferrous,H5,x_REV_F - x_REV_Fc,,,,1.0,underpowered (events<5),"events 0, days 0"
+sector:nonferrous,H6,MOM_leg: b_tauM,,,,,,
+sector:nonferrous,H6,MOM_leg: b_tauR,,,,,,
+sector:nonferrous,H6,REV_leg: b_tauM,,,,,,
+sector:nonferrous,H6,REV_leg: b_tauR,,,,,,
+sector:nonferrous,H7,deltaM: P(stay on)-occupancy,0.41955190927793673,,,,,"occupancy 0.576, P(stay) 0.995"
+sector:nonferrous,H7,deltaM: mean on-spell / ref detection delay,2.9381720430107525,,,,>=2,"mean spell 182.2d, ref delay 62d"
+sector:nonferrous,H7,deltaR: P(stay on)-occupancy,0.8223833700546029,,,,,"occupancy 0.145, P(stay) 0.967"
+sector:nonferrous,H7,deltaR: mean on-spell / ref detection delay,0.9856630824372761,,,,<2,"mean spell 30.6d, ref delay 31d"
+sector:nonferrous,H8,theta_c in zV low tercile,-0.0003046199623375601,-0.0007088609945959664,0.00014211982057308126,0.8941058941058941,not significant,n=633
+sector:nonferrous,H8,theta_c in zV mid tercile,0.00021253382938617594,-0.00022274999135460526,0.0006204098885977461,0.2137862137862138,not significant,n=632
+sector:nonferrous,H8,theta_c in zV high tercile,-6.636461220370295e-06,-0.0003674355541583281,0.0003595194408250751,0.5294705294705294,not significant,n=632
+sector:nonferrous,H8,"coef_s | controls zV, zPhiPerp",,,,,CI includes 0,
+sector:energy_chem,occupancy,share_I,0.3889908256880734,,,,,segments>=10d: 11
+sector:energy_chem,occupancy,segments_I,11.0,,,,,
+sector:energy_chem,occupancy,share_II,0.02981651376146789,,,,,segments>=10d: 3
+sector:energy_chem,occupancy,segments_II,3.0,,,,,
+sector:energy_chem,occupancy,share_III,0.05045871559633028,,,,,segments>=10d: 3
+sector:energy_chem,occupancy,segments_III,3.0,,,,,
+sector:energy_chem,occupancy,share_IV,0.5307339449541284,,,,,segments>=10d: 10
+sector:energy_chem,occupancy,segments_IV,10.0,,,,,
+sector:energy_chem,H0,theta_c,-3.9867220964638584e-05,-0.00025628681640178726,0.00020205630210307204,0.6263736263736264,not rejected,"mean s=0.359, raw theta=2.86e-04, boot one-sided lo=-2.27e-04"
+sector:energy_chem,H1,D_I-D_IV,-2.773274463780122e-05,-0.0008842071870067624,0.0008443661647467261,0.9500499500499501,wrong sign,"segments I: 11, IV: 10"
+sector:energy_chem,H1,x_MOM|I,0.00040218888655727127,3.275421410026732e-05,0.0007366137168543535,,supported,
+sector:energy_chem,H2,D_II-D_IV,-0.00024432825936918285,-0.0023011083076960657,0.0015972707591031935,0.8511488511488512,"underpowered: fewer than 5 independent segments (II: 3, IV: 10)","segments II: 3, IV: 10"
+sector:energy_chem,H2,x_REV|II,-0.0003838358908877454,-0.0010386801443073514,0.0003626112565146535,,CI includes 0,
+sector:energy_chem,H2b,slope_xREV_on_zPhiPerp|II,-0.00014998462663122044,-0.0020974910297786964,0.0015470233003831062,,CI includes 0,
+sector:energy_chem,H2c,worst5%_MOM_days_in_II_minus_share,-0.011481573485017535,,,0.8396604416814673,not significant,2/109 vs II share 0.030
+sector:energy_chem,H3,x_MOM|III,0.0012661339074179886,0.0005801262433793951,0.001969271381758398,,underpowered: fewer than 5 segments; positive,III segments: 3
+sector:energy_chem,H3,x_REV|III,-0.001924020949187787,-0.0030575156545258717,-0.0007365100432879006,,underpowered: fewer than 5 segments; negative,III segments: 3
+sector:energy_chem,H4,sharpe_MOM|IV,0.787067381798892,0.09617768967360207,1.4767154932471525,,not shown equivalent (significantly > 0),"TOST at 5% = 90% CI inside (-0.3, 0.3)"
+sector:energy_chem,H4,sharpe_REV|IV,-1.1495154594583716,-1.854044192575527,-0.5254537938703132,,not shown equivalent,"TOST at 5% = 90% CI inside (-0.3, 0.3)"
+sector:energy_chem,H5,x_REV_F - x_REV_Fc,-0.2246830631161412,-0.4534279845395257,0.023177017001735457,0.09211030616284697,not supported,"events 7, days 131"
+sector:energy_chem,H6,MOM_leg: b_tauM,2.4439124780293808e-06,-0.00031323569661492653,0.00021588925747431558,,,
+sector:energy_chem,H6,MOM_leg: b_tauR,9.534536607033858e-05,-9.685430817586218e-05,0.0003442782880343027,,,
+sector:energy_chem,H6,REV_leg: b_tauM,6.535374911267874e-05,-0.00017047758245462773,0.00033728350656866355,,,
+sector:energy_chem,H6,REV_leg: b_tauR,-1.507460091244629e-05,-0.0002473066992247167,0.00017206737511965908,,,
+sector:energy_chem,H7,deltaM: P(stay on)-occupancy,0.5542808662391072,,,,,"occupancy 0.439, P(stay) 0.994"
+sector:energy_chem,H7,deltaM: mean on-spell / ref detection delay,2.207373271889401,,,,>=2,"mean spell 136.9d, ref delay 62d"
+sector:energy_chem,H7,deltaR: P(stay on)-occupancy,0.8565063798376041,,,,,"occupancy 0.080, P(stay) 0.937"
+sector:energy_chem,H7,deltaR: mean on-spell / ref detection delay,0.47043010752688175,,,,<2,"mean spell 14.6d, ref delay 31d"
+sector:energy_chem,H8,theta_c in zV low tercile,-0.00013508940102874327,-0.0005428340202472021,0.00025948177892112106,0.6553446553446554,not significant,n=647
+sector:energy_chem,H8,theta_c in zV mid tercile,-0.0002152386789162712,-0.0005984573594952716,0.0002209039549036659,0.8181818181818182,not significant,n=646
+sector:energy_chem,H8,theta_c in zV high tercile,0.00015061636544522845,-0.0002352508607650457,0.0004596619389056332,0.17182817182817184,not significant,n=645
+sector:energy_chem,H8,"coef_s | controls zV, zPhiPerp",-0.00011201047437538706,-0.0010491878977894199,0.0006866206102919606,,CI includes 0,
+sector:agri,occupancy,share_I,0.591743119266055,,,,,segments>=10d: 13
+sector:agri,occupancy,segments_I,13.0,,,,,
+sector:agri,occupancy,share_II,0.03394495412844037,,,,,segments>=10d: 5
+sector:agri,occupancy,segments_II,5.0,,,,,
+sector:agri,occupancy,share_III,0.04954128440366973,,,,,segments>=10d: 3
+sector:agri,occupancy,segments_III,3.0,,,,,
+sector:agri,occupancy,share_IV,0.3247706422018349,,,,,segments>=10d: 10
+sector:agri,occupancy,segments_IV,10.0,,,,,
+sector:agri,H0,theta_c,-0.00025463316590659704,-0.00047740770751183406,-6.721129533727903e-07,0.9230769230769231,not rejected,"mean s=0.558, raw theta=1.35e-04, boot one-sided lo=-4.49e-04"
+sector:agri,H1,D_I-D_IV,-0.0008456289174551367,-0.001923475004643555,0.0003865651378865321,0.2177822177822178,wrong sign,"segments I: 13, IV: 10"
+sector:agri,H1,x_MOM|I,-0.00010463922491093136,-0.0004292748713867944,0.00023993856424491035,,CI includes 0,
+sector:agri,H2,D_II-D_IV,-0.00016065063641345983,-0.0024153821243235976,0.0026271167261296266,0.903096903096903,"direction ok, CI includes 0","segments II: 5, IV: 10"
+sector:agri,H2,x_REV|II,-0.0008160416691589802,-0.0018654231055464994,0.000210144954022091,,CI includes 0,
+sector:agri,H2b,slope_xREV_on_zPhiPerp|II,,,,,too few II days,
+sector:agri,H2c,worst5%_MOM_days_in_II_minus_share,0.002736715352131061,,,0.5087312683328102,not significant,4/109 vs II share 0.034
+sector:agri,H3,x_MOM|III,0.0012038106317104915,0.00015977010050409406,0.0022814758367631755,,underpowered: fewer than 5 segments; positive,III segments: 3
+sector:agri,H3,x_REV|III,-0.0014387015959166705,-0.0023014276217256865,-0.0006547320807435082,,underpowered: fewer than 5 segments; negative,III segments: 3
+sector:agri,H4,sharpe_MOM|IV,1.1800459929051872,0.2181297809845155,2.1849452408869863,,not shown equivalent (significantly > 0),"TOST at 5% = 90% CI inside (-0.3, 0.3)"
+sector:agri,H4,sharpe_REV|IV,-1.5374398243323202,-2.901857406576449,-0.2216412006188015,,not shown equivalent,"TOST at 5% = 90% CI inside (-0.3, 0.3)"
+sector:agri,H5,x_REV_F - x_REV_Fc,-0.2932884434884473,-0.5084568163130025,-0.046995014830135316,0.060599038904020665,not supported,"events 9, days 201"
+sector:agri,H6,MOM_leg: b_tauM,-0.0002069069783880678,-0.0006562659969942765,0.00014507908659108106,,,
+sector:agri,H6,MOM_leg: b_tauR,7.0866557179027165e-06,-0.00019530730219200005,0.00021624421298358813,,,
+sector:agri,H6,REV_leg: b_tauM,0.00022696851391100397,-0.0001741484248227464,0.0006913066429899386,,,
+sector:agri,H6,REV_leg: b_tauR,2.1883986806950953e-05,-0.00019231514366803044,0.0001942275150479338,,,
+sector:agri,H7,deltaM: P(stay on)-occupancy,0.3537048590360734,,,,,"occupancy 0.641, P(stay) 0.995"
+sector:agri,H7,deltaM: mean on-spell / ref detection delay,2.818548387096774,,,,>=2,"mean spell 174.8d, ref delay 62d"
+sector:agri,H7,deltaR: P(stay on)-occupancy,0.850579695533824,,,,,"occupancy 0.083, P(stay) 0.934"
+sector:agri,H7,deltaR: mean on-spell / ref detection delay,0.48924731182795694,,,,<2,"mean spell 15.2d, ref delay 31d"
+sector:agri,H8,theta_c in zV low tercile,-0.00012031290313215646,-0.0005771145792948265,0.00030324723784017386,0.6213786213786214,not significant,n=647
+sector:agri,H8,theta_c in zV mid tercile,-0.00025622554285756647,-0.0006661299772716451,0.00022242881040015726,0.7742257742257742,not significant,n=646
+sector:agri,H8,theta_c in zV high tercile,-0.000256272181054113,-0.0005090873508905445,-5.250930617264545e-06,0.8811188811188811,not significant,n=645
+sector:agri,H8,"coef_s | controls zV, zPhiPerp",-0.0010231365047567293,-0.002353730748968699,-2.7352940581922004e-06,,CI includes 0,

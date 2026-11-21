@@ -1,0 +1,4 @@
+panel,n_products,first_date,last_date,n_days,mean_live_products,n_locked_proxy,n_one_price,n_extreme_gt12pct,n_stale
+commodity,36,2012-03-27,2021-07-30,2500,33.2872,216,216,126,0
+index,4,2012-03-27,2021-07-30,2500,3.692,24,24,26,0
+bond,4,2012-03-27,2021-07-30,2500,3.5764,24,24,12,0

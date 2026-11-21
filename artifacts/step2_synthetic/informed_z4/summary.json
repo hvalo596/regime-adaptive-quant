@@ -1,0 +1,36 @@
+{
+  "source": "synthetic",
+  "notes": [
+    "synthetic fallback: plumbing check only"
+  ],
+  "calendar": {
+    "n_dates": 2500,
+    "first": "2012-01-02",
+    "last": "2021-07-30",
+    "weekend_dates": 0,
+    "gaps_over_5_days": 0,
+    "max_gap_days": 3
+  },
+  "H0_commodity": {
+    "theta_c": -0.0001782700064913178,
+    "ci": [
+      -0.0003972704821208304,
+      1.566750962279383e-05
+    ],
+    "p_shift": 0.973026973026973,
+    "p_pipeline": 0.9207920792079208,
+    "detect": false,
+    "benchmark_theta_planted_0.10": 0.0001927788878611448,
+    "power_planted_0.10_doc_dwell": 0.15,
+    "verdict": "NOT FOUND: the upper end of the 95% interval (1.57e-05) is below the Theta a planted effect of 0.10 produces here (1.93e-04)"
+  },
+  "per_product_multiplicity": {
+    "n_products": 39,
+    "n_reject_5pct": 1,
+    "expected_by_chance": 1.9500000000000002,
+    "binomial_p_for_count": 0.8647240457209439,
+    "n_holm_reject": 0
+  },
+  "seats": "fut_holding not fetched: seat signatures not computed",
+  "n_trials_in_ledger": 299
+}

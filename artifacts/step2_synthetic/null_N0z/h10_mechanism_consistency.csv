@@ -1,0 +1,4 @@
+state,n_stars,n_right_direction,n_significant,mechanism_consistent
+I,2,2,0,False
+II,4,2,1,False
+V,1,0,0,False

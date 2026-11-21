@@ -1,0 +1,4 @@
+outcome,event_kind,n_events,mean_diff,ci_lo,ci_hi
+tau_R,PROXY: limit-locked / one-price days (fut_settle margins not available),160,0.2170787823246448,0.06404098562420527,0.3889369103071475
+P(delta_R=1),PROXY: limit-locked / one-price days (fut_settle margins not available),171,0.05964912280701754,-0.007324561403508762,0.12403508771929818
+g_OI,PROXY: limit-locked / one-price days (fut_settle margins not available),164,-0.17293056440235116,-0.3053699065056101,-0.04218071566230085

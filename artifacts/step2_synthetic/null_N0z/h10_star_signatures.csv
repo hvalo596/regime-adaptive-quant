@@ -1,0 +1,8 @@
+state,star signature,right_direction,significant_5pct
+I,g_OI up vs IV,True,False
+I,b2 >= 0,True,False
+II,g_OI down on shock days vs IV,False,False
+II,AV up vs IV,False,False
+II,b2 < 0,True,False
+II,tau_R up after margin/limit events,True,True
+V,b2 > 0 on flagged assets,False,False

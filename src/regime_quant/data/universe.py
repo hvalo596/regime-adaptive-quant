@@ -53,7 +53,7 @@ def continuous_code(product: str) -> str:
 # "连续交易业务专题", DCE monthly reports 2015-05 / 2019-03 and the 2020-04-24 notice, CZCE notices 2014-12-05 and 2015-06-02).
 # A night session belongs to the NEXT trade date (exchange definition: "前一工作日21:00至当天15:00"), so the first trade date whose
 # bar contains a night print is the next business day (Monday for a Friday evening). The earlier draft table put 2015-01-01 on
-# almost every product, which was wrong by up to 17 months (copper group 2013-12-20, rebar group and DCE oilseed/metals 2014-12-26,
+# almost every product, which was wrong by up to 51 months (DCE L, V, PP, EG, C, CS) (copper group 2013-12-20, rebar group and DCE oilseed/metals 2014-12-26,
 # CZCE first batch 2014-12-12, DCE chemicals and corn 2019-03-29).
 NIGHT_SESSION_EVENING: dict[str, tuple[str, str]] = {
     "AU": ("2013-07-05", "verified"), "AG": ("2013-07-05", "verified"),
