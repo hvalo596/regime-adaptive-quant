@@ -6,6 +6,7 @@ Every test returns plain dicts so that synthetic (step 1) and real (step 2) repo
 from __future__ import annotations
 
 import numpy as np
+from scipy.stats import t as student_t
 
 from .config import InferenceParams
 from .inference import mean_diff_test, stationary_bootstrap_indices, theta_test
@@ -52,15 +53,22 @@ def h5_event_test(asset_pnl_rev: np.ndarray, excl: np.ndarray, ip: InferencePara
     boot = sums[idx].sum(axis=1) / cnt[idx].sum(axis=1)
     point = sums.sum() / cnt.sum()
     lo, hi = np.quantile(boot, [(1 - ip.ci_level) / 2, 1 - (1 - ip.ci_level) / 2])
-    p_neg = float((1 + (boot >= 0).sum()) / (1 + len(boot)))
-    res.update(diff=float(point), mean_F=float(np.nanmean(mf[use])), mean_Fc=float(np.nanmean(mc[use])), ci_lo=float(lo), ci_hi=float(hi),
-               p_neg=p_neg, reject=bool(point < 0 and p_neg < ip.alpha and len(runs) >= min_events))
+    p_boot = float((1 + (boot >= 0).sum()) / (1 + len(boot)))
+    # decision p: one-sample t-test on event-level means (df = events - 1). With a handful of heavy-tailed events the
+    # percentile bootstrap is anti-conservative (about 9-10% false rejections at ~14 events in world N2b).
+    ev_means = sums / cnt
+    se = ev_means.std(ddof=1) / np.sqrt(len(ev_means))
+    p_neg = float(student_t.cdf(ev_means.mean() / se, df=len(ev_means) - 1)) if se > 0 else 1.0
+    res.update(p_boot=p_boot, ev_mean=float(ev_means.mean()), diff=float(point), mean_F=float(np.nanmean(mf[use])), mean_Fc=float(np.nanmean(mc[use])), ci_lo=float(lo), ci_hi=float(hi),
+               p_neg=p_neg, reject=bool(ev_means.mean() < 0 and p_neg < ip.alpha and len(runs) >= min_events))
     return res
 
 
 def delta_association(delta: np.ndarray, z: np.ndarray, valid: np.ndarray, ip: InferenceParams = InferenceParams(), rng: np.random.Generator | None = None) -> dict:
-    """Association of a state indicator with an environment variable: mean(z | delta=1) - mean(z | delta=0), cyclic-shift p."""
+    """Association of a state indicator with an environment variable: mean(z | delta=1) - mean(z | delta=0), cyclic-shift p.
+    `std_diff` is the difference in units of the sd of z over the valid days (comparable across variables and worlds)."""
     ok = valid & np.isfinite(z)
     d = delta[ok] == 1
     res = mean_diff_test(z[ok], d, ~d, ip, rng)
-    return {"diff": res.diff, "p": res.p_shift, "reject": bool(res.p_shift < ip.alpha), "n1": res.n_a, "n0": res.n_b}
+    sd = float(np.std(z[ok])) if ok.any() else float("nan")
+    return {"diff": res.diff, "std_diff": res.diff / sd if sd > 0 else float("nan"), "p": res.p_shift, "reject": bool(res.p_shift < ip.alpha), "n1": res.n_a, "n0": res.n_b}

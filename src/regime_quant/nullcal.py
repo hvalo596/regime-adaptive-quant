@@ -31,9 +31,12 @@ def calibrate(specs=ALL_SPECS, n_sims: int = 30, seed0: int = 90_000, n_days: in
         if mask is not None:
             r = np.where(mask[: len(r), : r.shape[1]], r, np.nan)
         rt, _ = standardise(r)
-        r2, nf = mean_sq_corr(rt)
+        r2s = {}
         for sp in specs:
-            st = mr_stat(rt, sp, r2, nf)
+            win = max(sp.W, 40)
+            if win not in r2s:
+                r2s[win] = mean_sq_corr(rt, win)
+            st = mr_stat(rt, sp, *r2s[win])
             ok = np.isfinite(st.rho) & np.isfinite(st.se_formula)
             rho[sp.name].append(st.rho[ok])
             se[sp.name].append(st.se_formula[ok])

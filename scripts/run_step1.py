@@ -27,7 +27,7 @@ from regime_quant.step1 import COMBOS, SPECS, cp_interval, delay_task, rate_tabl
 from regime_quant.world import STATES, WorldSpec, generate, solve_states  # noqa: E402
 
 warnings.filterwarnings("ignore")
-NULL_KINDS = ["N0z", "N0", "N1", "N2", "N2b", "N3", "N4"]
+NULL_KINDS = ["N0z", "N0", "N1", "N2", "N2c", "N2b", "N3", "N4"]
 EFFECTS = [0.0, 0.05, 0.10, 0.15, 0.20]
 LONG = (300.0,) * 4
 DOC = (120.0, 20.0, 30.0, 120.0)
@@ -64,9 +64,8 @@ def main() -> None:
     for k in range(max(int(40 * sc), 6)):
         w = generate(WorldSpec(kind="N0z", seed=700_000 + k))
         rt, _ = standardise(w.ret)
-        r2, nf = mean_sq_corr(rt)
         for sp in ALL_SPECS:
-            st = mr_stat(rt, sp, r2, nf)
+            st = mr_stat(rt, sp)
             sign = 1 if sp.kind == "mom" else -1
             tau = sign * (st.rho - cal[sp.name]["bias"]) / (cal[sp.name]["se_mult"] * st.se_formula)
             taus[sp.name].append(tau[np.isfinite(tau)])
@@ -87,9 +86,8 @@ def main() -> None:
             for seed in range(max(int(8 * sc), 3)):
                 w = generate(WorldSpec(kind="regime", effect=eff, states_used=(k,), mean_dwell=(1e6,) * 4, seed=800_000 + seed))
                 rt, _ = standardise(w.ret)
-                r2, nf = mean_sq_corr(rt)
                 for sp in ALL_SPECS:
-                    st = mr_stat(rt, sp, r2, nf)
+                    st = mr_stat(rt, sp)
                     sign = 1 if sp.kind == "mom" else -1
                     est[sp.name].append(np.nanmean(sign * (st.rho[1500:] - cal[sp.name]["bias"])))
             for sp in ALL_SPECS:

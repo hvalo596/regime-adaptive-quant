@@ -66,11 +66,13 @@ def run_state_pipeline(
         rt, sig = standardise(ret, sp.vol_window, sp.clip)
         cache["rt"] = rt
         cache["fit"] = loo_factor_regress(rt, sp.factor_window)
-        cache["r2bar"] = mean_sq_corr(rt)
     rt, fit = cache["rt"], cache["fit"]
-    r2bar, nfull = cache["r2bar"]
     for sp_ in (mom, rev):
         if ("mr", sp_) not in cache:
+            win = max(sp_.W, 40)
+            if ("r2bar", win) not in cache:
+                cache[("r2bar", win)] = mean_sq_corr(rt, win)
+            r2bar, nfull = cache[("r2bar", win)]
             cache[("mr", sp_)] = mr_stat(rt, sp_, r2bar, nfull)
     mr_m, mr_r = cache[("mr", mom)], cache[("mr", rev)]
     tau_m = tau_stat(mr_m, "mom", cal[mom.name]["bias"], cal[mom.name]["se_mult"])

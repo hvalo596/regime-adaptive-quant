@@ -1,0 +1,24 @@
+{
+  "reconcile": {
+    "gross_max_abs_diff": 4.666406150377611e-16,
+    "gross_n": 2499,
+    "cost_max_abs_diff": 2.482822974991805e-17,
+    "cost_n": 2500,
+    "x_mom_max_abs_diff": 4.701100619897147e-16,
+    "x_rev_max_abs_diff": 9.575673587391975e-16,
+    "weights_max_abs_diff": 1.3211653993039363e-14,
+    "gross_scale": 0.060142820414235125
+  },
+  "identity_max_abs": 1.3877787807814457e-17,
+  "lookahead_max_abs_diff": {
+    "tau_m": 0.0,
+    "tau_r": 0.0,
+    "s": 0.0,
+    "C": 0.0,
+    "V": 0.0,
+    "Phi_perp": 0.0,
+    "weights": 0.0
+  },
+  "n_days_compared": 2240,
+  "pass": true
+}

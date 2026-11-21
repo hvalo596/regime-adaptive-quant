@@ -116,7 +116,7 @@ def solve_states(effect: float, phi: float = 0.9, a: float = 0.5, covol: bool = 
 
 @dataclass(frozen=True)
 class WorldSpec:
-    kind: str = "regime"  # regime | N0 | N0z | N1 | N2 | N2b | N3 | N4 | informed
+    kind: str = "regime"  # regime | N0 | N0z | N1 | N2 (zero core) | N2c (constant non-zero core) | N2b | N3 | N4 | informed
     n_assets: int = 40
     n_days: int = 2500
     burn: int = 600
@@ -246,7 +246,7 @@ def generate(spec: WorldSpec) -> World:
     else:
         quad = np.full(T, 3, dtype=np.int64)
         base = (stationary_w[:, None] * np.stack([th_arr[k] for k in STATES])).sum(axis=0)
-        if kind in ("N0z", "N3", "N4"):
+        if kind in ("N0z", "N3", "N4", "N2"):
             base = np.array([0.0, spec.phi, 0.0, spec.a, 1.0])
         par = np.tile(base, (T, 1))
         par[:, 4] = 1.0
@@ -259,7 +259,7 @@ def generate(spec: WorldSpec) -> World:
     cm = np.full((T, N), spec.c_m)
     risk_structure = np.zeros(T, dtype=np.int64)
     idio_mult = np.ones((T, N))
-    if kind == "N2":
+    if kind in ("N2", "N2c"):
         rs = _semi_markov(rng, T, [spec.n2_period] * 3, 3.0, 3)
         risk_structure = rs
         cm = np.where((rs == 1)[:, None], 0.45, np.where((rs == 0)[:, None], 0.06, spec.c_m)) * np.ones((T, N))

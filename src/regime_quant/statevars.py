@@ -85,7 +85,11 @@ def loo_factor_regress(rt: np.ndarray, window: int = 60, min_assets: int = 6) ->
 
 
 def mean_sq_corr(rt: np.ndarray, window: int = 250, min_valid: int = 5) -> tuple[np.ndarray, np.ndarray]:
-    """Trailing mean of squared pairwise correlations among assets with a full window; returns (rho2_bar, n_full)."""
+    """Trailing mean of squared pairwise correlations among assets with a full window; returns (rho2_bar, n_full).
+    The sampling bias 1/window of a squared sample correlation is subtracted (floored at 0), so that independent assets
+    give rho2_bar ~ 0 whatever the window. The window should match the estimation window of the statistic it feeds:
+    a long fixed window cannot see a short-lived rise in cross-asset correlation, which shrinks the effective N exactly
+    when the pooled estimate is noisiest (this showed up as delta^R drifting with Phi-perp in world N2)."""
     T, N = rt.shape
     valid = ~np.isnan(rt)
     x = np.where(valid, rt, 0.0)
@@ -106,7 +110,7 @@ def mean_sq_corr(rt: np.ndarray, window: int = 250, min_valid: int = 5) -> tuple
             continue
         sub = a[np.ix_(ok, ok)] / np.outer(d[ok], d[ok])
         off = (sub**2).sum() - k
-        out[t] = off / (k * (k - 1))
+        out[t] = max(off / (k * (k - 1)) - 1.0 / window, 0.0)
     return out, nfull
 
 
@@ -150,7 +154,7 @@ def mr_stat(rt: np.ndarray, spec: LegSpec, rho2_bar: np.ndarray | None = None, n
         rho = cov.sum(axis=1) / np.sqrt(vx.sum(axis=1) * vy.sum(axis=1))
     rho[na < 5] = np.nan
     if rho2_bar is None:
-        rho2_bar, nfull_corr = mean_sq_corr(rt)
+        rho2_bar, nfull_corr = mean_sq_corr(rt, max(spec.W, 40))
     with np.errstate(invalid="ignore", divide="ignore"):
         n_eff = na / (1.0 + (na - 1.0) * np.nan_to_num(rho2_bar, nan=np.nan))
     kap = kappa_LH(L, H)
