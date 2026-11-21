@@ -207,7 +207,8 @@ def _semi_markov(rng: np.random.Generator, T: int, mean_dwell, disp: float, k_st
         out[t : t + d] = cur
         t += d
         others = [k for k in allowed if k != cur]
-        cur = int(rng.choice(others))
+        if others:
+            cur = int(rng.choice(others))
     return out
 
 

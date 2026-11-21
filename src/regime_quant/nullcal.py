@@ -52,3 +52,23 @@ def save(cal: dict, path: str | Path) -> None:
 
 def load(path: str | Path) -> dict:
     return json.loads(Path(path).read_text())
+
+
+def calibrate_c_null(n_grid=(8, 12, 16, 20, 25, 30, 35, 40, 45), n_sims: int = 16, seed0: int = 95_000, level: float = 0.95, n_days: int = 2500, kind: str = "N0z") -> dict:
+    """Pipeline-level null of C: the `level` quantile of C_t over stateless worlds with N assets (vol clustering and
+    cross-correlation included). Keys are N as strings so the table survives JSON."""
+    from .config import StateParams
+    from .statevars import concentration, loo_factor_regress
+
+    out = {}
+    for n in n_grid:
+        vals = []
+        for k in range(n_sims):
+            w = generate(WorldSpec(kind=kind, n_days=n_days, n_assets=int(n), seed=seed0 + 31 * int(n) + k))
+            rt, _ = standardise(w.ret)
+            fit = loo_factor_regress(rt)
+            conc = concentration(fit.resid, StateParams())
+            c = conc.C[~np.isnan(conc.C)]
+            vals.append(c)
+        out[str(int(n))] = float(np.quantile(np.concatenate(vals), level))
+    return out

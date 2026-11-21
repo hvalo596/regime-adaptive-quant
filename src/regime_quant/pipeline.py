@@ -84,7 +84,7 @@ def run_state_pipeline(
 
     if "conc" not in cache:
         conc = concentration(fit.resid, sp)
-        I, F = informed_indicator(conc, sp)
+        I, F = informed_indicator(conc, sp, cal.get("C_threshold"))
         cache["conc"], cache["I"], cache["F"] = conc, I, F
         cache["env"] = environment(ret, fit.r2, sp)
     conc, I, F, env = cache["conc"], cache["I"], cache["F"], cache["env"]

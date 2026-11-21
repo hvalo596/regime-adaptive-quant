@@ -209,23 +209,30 @@ def concentration(resid: np.ndarray, sp: StateParams = StateParams(), kurt_cap: 
         h0 = (1.0 / n) * (1.0 + (2.0 + k_mean) / sp.c_recent)
         C = (hhi - h0) / (1.0 - h0)
     C[n < 3] = np.nan
-    flagged = flag_sets(u, p, sp)
+    flagged = flag_sets(u, p, hhi, h0, n.astype(float), sp)
     return Concentration(u=u, p=p, hhi=hhi, h0=h0, C=C, n_live=n.astype(float), kurt=k_mean, flagged=flagged)
 
 
-def flag_sets(u: np.ndarray, p: np.ndarray, sp: StateParams) -> np.ndarray:
-    """F_t = smallest set of assets (largest shares first) with cumulative share >= 0.5, every member with u >= 4.
-    If the assets with u >= 4 do not carry 50% of the mass in total, F_t is empty."""
+def flag_sets(u: np.ndarray, p: np.ndarray, hhi: np.ndarray, h0: np.ndarray, n_live: np.ndarray, sp: StateParams) -> np.ndarray:
+    """F_t = smallest set of assets with u >= 4 (largest shares first) that carries at least half of the concentration
+    excess  HHI - h0  of the cross-section, each asset contributing  p_i^2 - h0/N.
+    DEVIATION from doc 3.5/4.4 (which asks for 50% of the u-MASS sum p_i): with the cap u <= 25 a single asset can hold at
+    most 25/(25 + N - 1) of the mass, i.e. less than 50% for every N >= 27, so the doc's rule can never flag one event
+    in a 30-40 asset panel. The contribution-to-C version is the same idea ("assets contributing most to C") and feasible."""
     T, N = u.shape
     out = np.zeros((T, N), dtype=bool)
     for t in range(T):
         ut = u[t]
         ok = ~np.isnan(ut) & (ut >= sp.u_flag_min)
-        if not ok.any():
+        if not ok.any() or not np.isfinite(hhi[t]) or not np.isfinite(h0[t]):
+            continue
+        excess = hhi[t] - h0[t]
+        if excess <= 0:
             continue
         idx = np.flatnonzero(ok)
         order = idx[np.argsort(-p[t, idx])]
-        cum = np.cumsum(p[t, order])
+        contrib = (p[t, order] ** 2 - h0[t] / n_live[t]) / excess
+        cum = np.cumsum(contrib)
         if cum[-1] < sp.flag_mass:
             continue
         k = int(np.searchsorted(cum, sp.flag_mass - 1e-12)) + 1
@@ -263,15 +270,29 @@ def null_c_threshold(n_assets: int, kurt_excess: float, sp: StateParams = StateP
     return thr
 
 
-def informed_indicator(conc: Concentration, sp: StateParams = StateParams()) -> tuple[np.ndarray, np.ndarray]:
-    """I_t = 1{C_t >= c_C(N_t)}; F_t members only where I_t = 1. Returns (I (T,) bool, F (T, N) bool)."""
+def c_threshold_from_table(table: dict | None, n_live: float) -> float | None:
+    if not table:
+        return None
+    ns = np.array(sorted(float(k) for k in table))
+    vs = np.array([table[str(int(k)) if str(int(k)) in table else k] for k in ns], dtype=float)
+    return float(np.interp(n_live, ns, vs))
+
+
+def informed_indicator(conc: Concentration, sp: StateParams = StateParams(), c_table: dict | None = None) -> tuple[np.ndarray, np.ndarray]:
+    """I_t = 1{C_t >= c_C(N_t)}; F_t members only where I_t = 1. Returns (I (T,) bool, F (T, N) bool).
+    c_C(N) comes from `c_table` (pipeline-level null of stateless worlds, nullcal.calibrate_c_null) when given, otherwise
+    from the iid-u parametric bootstrap of doc 3.5 item 5 (which ignores idiosyncratic vol clustering and fires far
+    more often than 5% on data with clustering)."""
     T = len(conc.C)
     I = np.zeros(T, dtype=bool)
     for t in range(T):
         if np.isnan(conc.C[t]) or conc.n_live[t] < 3:
             continue
-        k = conc.kurt[t] if np.isfinite(conc.kurt[t]) else 6.0
-        I[t] = conc.C[t] >= null_c_threshold(int(conc.n_live[t]), k, sp)
+        thr = c_threshold_from_table(c_table, conc.n_live[t])
+        if thr is None:
+            k = conc.kurt[t] if np.isfinite(conc.kurt[t]) else 6.0
+            thr = null_c_threshold(int(conc.n_live[t]), k, sp)
+        I[t] = conc.C[t] >= thr
     F = conc.flagged & I[:, None]
     return I, F
 

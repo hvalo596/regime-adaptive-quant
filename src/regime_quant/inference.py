@@ -72,6 +72,7 @@ class ThetaResult:
     detect: bool
     mean_s: float
     mean_D: float
+    raw_lo_one_sided: float = float("nan")  # naive reading of the doc: bootstrap lower bound of E[sD] itself
 
 
 def theta_test(s: np.ndarray, D: np.ndarray, ip: InferenceParams = InferenceParams(), rng: np.random.Generator | None = None) -> ThetaResult:
@@ -92,12 +93,13 @@ def theta_test(s: np.ndarray, D: np.ndarray, ip: InferenceParams = InferencePara
     boots = cov_rows(s[idx], D[idx])
     ci = quantile_ci(boots, ip.ci_level)
     lo1 = float(np.quantile(boots, ip.alpha))
+    raw_lo = float(np.quantile((s[idx] * D[idx]).mean(axis=1), ip.alpha))
     sh = shift_indices(n, ip.min_shift, ip.n_shift, rng)
     null_c = cov_rows(s[sh], np.broadcast_to(D, sh.shape))
     null_raw = (s[sh] * D[None, :]).mean(axis=1)
     p = float((1 + (null_c >= tc).sum()) / (1 + len(null_c)))
     p_raw = float((1 + (null_raw >= raw).sum()) / (1 + len(null_raw)))
-    return ThetaResult(n, raw, tc, ci[0], ci[1], lo1, p, p_raw, bool(p < ip.alpha and lo1 > 0), float(s.mean()), float(D.mean()))
+    return ThetaResult(n, raw, tc, ci[0], ci[1], lo1, p, p_raw, bool(p < ip.alpha and lo1 > 0), float(s.mean()), float(D.mean()), raw_lo)
 
 
 @dataclass
