@@ -122,9 +122,17 @@ class MRStat:
     n_eff: np.ndarray
     t_pairs: int
     kappa: float
+    rho_raw: np.ndarray | None = None  # same pooling WITHOUT window demeaning (keeps the drift / risk-premium component)
 
 
-def mr_stat(rt: np.ndarray, spec: LegSpec, rho2_bar: np.ndarray | None = None, nfull_corr: np.ndarray | None = None) -> MRStat:
+def mr_stat(
+    rt: np.ndarray,
+    spec: LegSpec,
+    rho2_bar: np.ndarray | None = None,
+    nfull_corr: np.ndarray | None = None,
+    min_assets: int = 5,
+    min_pair_frac: float = 1.0,
+) -> MRStat:
     """Pooled strategy-matched autocorrelation, per-asset window demeaning (doc 3.3):
         X_s = sum of r_tilde over the last L days ending s,  Y_s = sum over days s+gap+1 .. s+gap+H,
         pair completed at u = s+gap+H, window = the T = W-L-H-gap+1 latest completed pairs.
@@ -147,21 +155,25 @@ def mr_stat(rt: np.ndarray, spec: LegSpec, rho2_bar: np.ndarray | None = None, n
         cov = sxy - sx * sy / n
         vx = sxx - sx**2 / n
         vy = syy - sy**2 / n
-    use = n >= T_pairs
+    use = n >= min_pair_frac * T_pairs
     cov, vx, vy = (np.where(use, a, 0.0) for a in (cov, vx, vy))
     na = use.sum(axis=1)
     with np.errstate(invalid="ignore", divide="ignore"):
         rho = cov.sum(axis=1) / np.sqrt(vx.sum(axis=1) * vy.sum(axis=1))
-    rho[na < 5] = np.nan
-    if rho2_bar is None:
-        rho2_bar, nfull_corr = mean_sq_corr(rt, max(spec.W, 40))
+        raw = np.where(use, sxy, 0.0).sum(axis=1) / np.sqrt(np.where(use, sxx, 0.0).sum(axis=1) * np.where(use, syy, 0.0).sum(axis=1))
+    rho[na < min_assets] = np.nan
+    raw[na < min_assets] = np.nan
+    if na.max() <= 1:
+        rho2_bar = np.zeros(len(na))
+    elif rho2_bar is None:
+        rho2_bar, nfull_corr = mean_sq_corr(rt, max(spec.W, 40), min_valid=min(min_assets, 5))
     with np.errstate(invalid="ignore", divide="ignore"):
         n_eff = na / (1.0 + (na - 1.0) * np.nan_to_num(rho2_bar, nan=np.nan))
     kap = kappa_LH(L, H)
     with np.errstate(invalid="ignore", divide="ignore"):
         se = np.sqrt(kap / (T_pairs * n_eff))
-    se[~np.isfinite(se) | (na < 5)] = np.nan
-    return MRStat(rho=rho, se_formula=se, n_assets=na.astype(float), n_eff=n_eff, t_pairs=T_pairs, kappa=kap)
+    se[~np.isfinite(se) | (na < min_assets)] = np.nan
+    return MRStat(rho=rho, se_formula=se, n_assets=na.astype(float), n_eff=n_eff, t_pairs=T_pairs, kappa=kap, rho_raw=raw)
 
 
 def tau_stat(stat: MRStat, kind: str, bias: float, se_mult: float) -> np.ndarray:

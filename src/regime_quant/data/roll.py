@@ -195,7 +195,7 @@ def build_continuous(
         return np.where(held >= 0, a[idx, np.maximum(held, 0)], np.nan)
 
     extra = {}
-    for col in ("high", "low", "pre_settle", "amount"):
+    for col in ("high", "low", "pre_settle", "pre_close", "open", "settle", "amount"):
         if col in d.columns:
             extra[f"h_{col}"] = held_col(wide(col)[codes])
     out = pd.DataFrame(

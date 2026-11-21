@@ -58,22 +58,27 @@ def run_state_pipeline(
     use_exclusion: bool = True,
     use_kappa: bool = True,
     cache: dict | None = None,
+    min_assets: int = 5,
+    min_pair_frac: float = 1.0,
+    exclude_cells: np.ndarray | None = None,
 ) -> StateRun:
     """`cal` maps spec name -> {"bias", "se_mult"} (nullcal.calibrate). `cache` (optional dict) memoises the pieces that do
     not depend on the leg specs (standardisation, factor fit, correlation, concentration, environment) across calls."""
     cache = cache if cache is not None else {}
     if "rt" not in cache:
         rt, sig = standardise(ret, sp.vol_window, sp.clip)
+        if exclude_cells is not None:
+            rt = np.where(exclude_cells, np.nan, rt)  # robustness: drop these asset-days from the STATE variables only
         cache["rt"] = rt
-        cache["fit"] = loo_factor_regress(rt, sp.factor_window)
+        cache["fit"] = loo_factor_regress(rt, sp.factor_window, min_assets=max(min_assets + 1, 6) if min_assets > 1 else 6)
     rt, fit = cache["rt"], cache["fit"]
     for sp_ in (mom, rev):
         if ("mr", sp_) not in cache:
             win = max(sp_.W, 40)
             if ("r2bar", win) not in cache:
-                cache[("r2bar", win)] = mean_sq_corr(rt, win)
+                cache[("r2bar", win)] = mean_sq_corr(rt, win, min_valid=min(min_assets, 5)) if rt.shape[1] > 1 else (np.zeros(len(rt)), np.ones(len(rt)))
             r2bar, nfull = cache[("r2bar", win)]
-            cache[("mr", sp_)] = mr_stat(rt, sp_, r2bar, nfull)
+            cache[("mr", sp_)] = mr_stat(rt, sp_, r2bar, nfull, min_assets=min_assets, min_pair_frac=min_pair_frac)
     mr_m, mr_r = cache[("mr", mom)], cache[("mr", rev)]
     tau_m = tau_stat(mr_m, "mom", cal[mom.name]["bias"], cal[mom.name]["se_mult"])
     tau_r = tau_stat(mr_r, "rev", cal[rev.name]["bias"], cal[rev.name]["se_mult"])

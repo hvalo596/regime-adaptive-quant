@@ -21,7 +21,7 @@ from .world import WorldSpec, generate
 ALL_SPECS = (MOM_MAIN, MOM_SECOND, REV_MAIN, REV_SECOND, REV_SECOND_GAP)
 
 
-def calibrate(specs=ALL_SPECS, n_sims: int = 30, seed0: int = 90_000, n_days: int = 2500, n_assets: int = 40, mask: np.ndarray | None = None, kind: str = "N0z") -> dict:
+def calibrate(specs=ALL_SPECS, n_sims: int = 30, seed0: int = 90_000, n_days: int = 2500, n_assets: int = 40, mask: np.ndarray | None = None, kind: str = "N0z", min_assets: int | None = None) -> dict:
     """`mask` (T, N) bool optional availability pattern (True = live) so the calibration can mimic a real unbalanced panel."""
     rho = {sp.name: [] for sp in specs}
     se = {sp.name: [] for sp in specs}
@@ -32,11 +32,12 @@ def calibrate(specs=ALL_SPECS, n_sims: int = 30, seed0: int = 90_000, n_days: in
             r = np.where(mask[: len(r), : r.shape[1]], r, np.nan)
         rt, _ = standardise(r)
         r2s = {}
+        ma = min_assets if min_assets is not None else (1 if n_assets == 1 else min(5, n_assets))
         for sp in specs:
             win = max(sp.W, 40)
             if win not in r2s:
-                r2s[win] = mean_sq_corr(rt, win)
-            st = mr_stat(rt, sp, *r2s[win])
+                r2s[win] = mean_sq_corr(rt, win, min_valid=min(ma, 5)) if n_assets > 1 else (np.zeros(len(rt)), np.ones(len(rt)))
+            st = mr_stat(rt, sp, *r2s[win], min_assets=ma)
             ok = np.isfinite(st.rho) & np.isfinite(st.se_formula)
             rho[sp.name].append(st.rho[ok])
             se[sp.name].append(st.se_formula[ok])
