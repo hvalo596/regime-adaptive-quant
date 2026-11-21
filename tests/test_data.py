@@ -140,3 +140,18 @@ def test_panel_liquidity_latch_is_point_in_time(synth):
     first = pan.returns.apply(lambda s: s.first_valid_index())
     assert (first > pan.returns.index[PanelParams().liq_window - 1]).all()
     assert {"h_settle", "h_open", "h_pre_close"} <= set(pan.continuous["RB"].columns)
+
+
+def test_fetch_settle_roundtrip_and_events(tmp_path, synth):
+    from regime_quant.data.store import fetch_settle
+    from regime_quant.nondefining import margin_events_from_settle
+
+    tr = FakeTushareTransport(synth)
+    client = TushareClient(TushareConfig(token="x", max_calls_per_min=10**6), transport=tr, sleep=lambda s: None)
+    store = RawStore(tmp_path)
+    dates = [d.strftime("%Y%m%d") for d in pd.bdate_range("2012-02-20", "2012-04-20")]
+    warns = fetch_settle(client, store, dates, ["SHFE"])
+    assert warns == []
+    st = store.read("fut_settle.csv.gz")
+    ev = margin_events_from_settle(st, pd.bdate_range("2012-02-20", "2012-04-20"), ["RB"])
+    assert ev["RB"].sum() == 1  # the planted step up at the start of March->April block

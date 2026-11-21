@@ -20,7 +20,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from regime_quant.data.store import RawStore, fetch_holding, fetch_universe  # noqa: E402
+from regime_quant.data.store import RawStore, fetch_holding, fetch_settle, fetch_universe  # noqa: E402
 from regime_quant.data.tushare_client import MissingTokenError, TushareClient, TushareConfig  # noqa: E402
 from regime_quant.data.universe import PRODUCTS, commodity_products  # noqa: E402
 
@@ -35,6 +35,8 @@ def main() -> int:
     ap.add_argument("--refresh", action="store_true")
     ap.add_argument("--calls-per-min", type=int, default=150)
     ap.add_argument("--holding-dates", default=None, help="comma-separated YYYYMMDD list; fetches fut_holding rankings")
+    ap.add_argument("--all-days-extras", action="store_true", help="fetch fut_holding and fut_settle for every trade day of the fetched products (about 5 calls per day: slow, 1-2 hours)")
+    ap.add_argument("--settle-dates", default=None, help="comma-separated YYYYMMDD list; fetches fut_settle margin parameters")
     args = ap.parse_args()
 
     if args.products:
@@ -60,9 +62,18 @@ def main() -> int:
     store = RawStore(args.raw_dir)
     log = fetch_universe(client, store, products, start=args.start, end=args.end, refresh=args.refresh)
     print({k: v for k, v in log.items() if k != "products"})
-    if args.holding_dates:
-        exs = sorted({PRODUCTS[p][0] for p in products})
-        for w in fetch_holding(client, store, args.holding_dates.split(","), exs):
+    exs = sorted({PRODUCTS[p][0] for p in products})
+    hold_dates = args.holding_dates.split(",") if args.holding_dates else None
+    settle_dates = args.settle_dates.split(",") if args.settle_dates else None
+    if args.all_days_extras:
+        cal = client.trade_cal("SHFE", args.start, args.end or __import__("time").strftime("%Y%m%d"))
+        days = sorted(cal[cal["is_open"] == 1]["cal_date"].astype(str).tolist())
+        hold_dates = settle_dates = days
+    if hold_dates:
+        for w in fetch_holding(client, store, hold_dates, exs):
+            print("WARNING:", w)
+    if settle_dates:
+        for w in fetch_settle(client, store, settle_dates, exs):
             print("WARNING:", w)
     return 0
 

@@ -124,3 +124,27 @@ def fetch_holding(client: TushareClient, store: RawStore, trade_dates: list[str]
             if df.attrs.get("truncated"):
                 warnings.append(f"{ex} {d}: hit 4000-row cap, ranking truncated")
     return warnings
+
+
+SETTLE_KEEP = ["ts_code", "trade_date", "settle", "long_margin_rate", "short_margin_rate", "b_hedging_margin_rate", "s_hedging_margin_rate"]
+
+
+def fetch_settle(client: TushareClient, store: RawStore, trade_dates: list[str], exchanges: list[str]) -> list[str]:
+    """Exchange margin parameters per (exchange, day) -> one consolidated file `fut_settle.csv.gz` (kept columns only), used for
+    the margin-hike events of H11. Resumable via per-day parts under fut_settle_parts/. Returns truncation warnings."""
+    warnings = []
+    parts = []
+    for d in trade_dates:
+        for ex in exchanges:
+            part = f"fut_settle_parts/{ex}_{d}.csv.gz"
+            if not store.exists(*part.split("/")):
+                df = client.fut_settle(d, ex)
+                keep = df[[c for c in SETTLE_KEEP if c in df.columns]] if not df.empty else df
+                store.write(keep, *part.split("/"))
+                if df.attrs.get("truncated"):
+                    warnings.append(f"{ex} {d}: hit row cap, settlement parameters truncated")
+            parts.append(store.read(*part.split("/")))
+    parts = [p for p in parts if not p.empty]
+    if parts:
+        store.write(pd.concat(parts, ignore_index=True), "fut_settle.csv.gz")
+    return warnings

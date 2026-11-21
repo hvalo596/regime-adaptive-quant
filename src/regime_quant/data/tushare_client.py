@@ -21,7 +21,7 @@ from typing import Callable
 import pandas as pd
 
 ENDPOINT = "http://api.tushare.pro"
-ROW_CAPS = {"fut_daily": 2000, "fut_mapping": 5000, "fut_holding": 4000, "fut_basic": 10**9, "trade_cal": 10**9}
+ROW_CAPS = {"fut_daily": 2000, "fut_mapping": 5000, "fut_holding": 4000, "fut_settle": 4000, "fut_basic": 10**9, "trade_cal": 10**9}
 
 Transport = Callable[[str, dict, str], pd.DataFrame]
 
@@ -161,4 +161,10 @@ class TushareClient:
         (4000-row cap) -- the caller gets a `truncated` attribute so this is never silent."""
         df = self.query("fut_holding", trade_date=trade_date, exchange=exchange)
         df.attrs["truncated"] = len(df) >= self.row_caps["fut_holding"]
+        return df
+
+    def fut_settle(self, trade_date: str, exchange: str) -> pd.DataFrame:
+        """Exchange settlement parameters (margin rates, fees) for one day and exchange; `truncated` attr as for fut_holding."""
+        df = self.query("fut_settle", trade_date=trade_date, exchange=exchange)
+        df.attrs["truncated"] = len(df) >= self.row_caps["fut_settle"]
         return df

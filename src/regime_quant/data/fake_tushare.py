@@ -165,6 +165,12 @@ class FakeTushareTransport:
                  "vol": rng.integers(1, 1000, 20), "vol_chg": 0, "long_hld": rng.integers(1, 1000, 20),
                  "long_chg": 0, "short_hld": rng.integers(1, 1000, 20), "short_chg": 0}
             ).head(self.caps["fut_holding"])
+        if api == "fut_settle":
+            day = pd.Timestamp(params["trade_date"])
+            b = d.basic[(d.basic["exchange"] == params.get("exchange"))]
+            live = b[(pd.to_datetime(b["list_date"]) <= day) & (pd.to_datetime(b["delist_date"]) >= day)]
+            rate = 0.08 + 0.02 * (day.month % 3 == 0)  # a step up in every third month, for the event code path
+            return pd.DataFrame({"ts_code": live["ts_code"], "trade_date": params["trade_date"], "settle": 1.0, "long_margin_rate": rate, "short_margin_rate": rate}).head(self.caps["fut_settle"])
         if api == "trade_cal":
             days = pd.bdate_range(params["start_date"], params["end_date"])
             return pd.DataFrame({"exchange": params["exchange"], "cal_date": days.strftime("%Y%m%d"), "is_open": 1})
