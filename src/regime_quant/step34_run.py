@@ -195,7 +195,7 @@ def panel_report(name: str, ret_df: pd.DataFrame, cal: dict, out: Path, out4: Pa
     pt = perf_table(ev, common)
     pt.to_csv(out4 / f"perf_{name}.csv", index=False)
     pairs = []
-    for s_ in ("FILT-PEN", "FILT-SOFT", "FILT-HARD", "FILT-BAND", "LEARNED", "RULE"):
+    for s_ in ("FILT-PEN", "FILT-PEN-G", "FILT-SOFT", "FILT-HARD", "FILT-BAND", "LEARNED", "RULE"):
         for b_ in ("EW50", "MOM", "TP60", "EWA"):
             pairs.append((s_ + "+VT", b_ + "+VT"))
             pairs.append((s_, b_))
@@ -209,7 +209,7 @@ def panel_report(name: str, ret_df: pd.DataFrame, cal: dict, out: Path, out4: Pa
     comp.to_csv(out4 / f"comparisons_{name}.csv", index=False)
     dec = []
     D = np.where(common, st.run.D_next, np.nan)
-    for k in ("RULE", "FILT-HARD", "FILT-SOFT", "FILT-PEN", "FILT-BAND", "LEARNED", "TP60", "EWA"):
+    for k in ("RULE", "FILT-HARD", "FILT-SOFT", "FILT-PEN", "FILT-BAND", "FILT-PEN-G", "FILT-HARD-G", "LEARNED", "TP60", "EWA"):
         d = selection_decomposition(np.where(common, sig[k], np.nan), D)
         dec.append({"signal": k, **d})
     pd.DataFrame(dec).to_csv(out4 / f"selection_decomposition_{name}.csv", index=False)
@@ -260,7 +260,7 @@ def _stats_for_world(ret: np.ndarray, truth: tuple | None, cal: dict, with_lr: b
     if common.sum() < 500:
         return out
     D = np.where(common, st.run.D_next, np.nan)
-    for k in ("RULE", "FILT-HARD", "FILT-PEN", "TP60", "EWA") + (("ORACLE",) if truth is not None else ()):
+    for k in ("RULE", "FILT-HARD", "FILT-PEN", "FILT-PEN-G", "TP60", "EWA") + (("ORACLE",) if truth is not None else ()):
         th = theta_test(np.where(common, sig[k], np.nan), D, IP_FAST, rng)
         out[f"theta_c:{k}"], out[f"detect:{k}"], out[f"p_shift:{k}"] = th.theta_c, bool(th.detect), th.p_shift
     if truth is not None:
@@ -269,14 +269,14 @@ def _stats_for_world(ret: np.ndarray, truth: tuple | None, cal: dict, with_lr: b
         out["auc:pM"], out["auc:pR"] = auc(st.pm[ok], dm[ok]), auc(st.pr[ok], dr[ok])
         out["auc:tauM"], out["auc:tauR"] = auc(st.run.tau_m[ok], dm[ok]), auc(st.run.tau_r[ok], dr[ok])
         out["degenerate:M"], out["degenerate:R"] = st.rfM.degenerate_share, st.rfR.degenerate_share
-        for k in ("FILT-PEN", "RULE", "ORACLE", "TP60", "EWA"):
+        for k in ("FILT-PEN", "FILT-PEN-G", "RULE", "ORACLE", "TP60", "EWA"):
             d = selection_decomposition(np.where(common, sig[k], np.nan), D)
             out[f"timing_ann:{k}"], out[f"tilt_ann:{k}"], out[f"selection_ann:{k}"] = d.get("timing_ann"), d.get("tilt_ann"), d.get("selection_ann")
     pt = perf_table(ev, common).set_index("strategy")
-    for k in ("EW50", "EW50+VT", "MOM+VT", "RULE+VT", "FILT-PEN+VT", "FILT-BAND+VT", "TP60+VT", "EWA+VT") + (("ORACLE+VT",) if truth is not None else ()):
+    for k in ("EW50", "EW50+VT", "MOM+VT", "RULE+VT", "FILT-PEN+VT", "FILT-PEN-G+VT", "FILT-BAND+VT", "TP60+VT", "EWA+VT") + (("ORACLE+VT",) if truth is not None else ()):
         for c in (0.0, 0.5, 1.0):
             out[f"sharpe:{k}:c{c}"] = pt.loc[k, f"sharpe_c{c}"]
-    comp = comparison_table(ev, common, [("FILT-PEN+VT", "EW50+VT"), ("RULE+VT", "EW50+VT"), ("FILT-PEN+VT", "EWA+VT"), ("FILT-PEN+VT", "TP60+VT")] + ([("ORACLE+VT", "EW50+VT")] if truth is not None else []), IP_FAST, rng, cost=1.0)
+    comp = comparison_table(ev, common, [("FILT-PEN+VT", "EW50+VT"), ("FILT-PEN-G+VT", "EW50+VT"), ("RULE+VT", "EW50+VT"), ("FILT-PEN+VT", "EWA+VT"), ("FILT-PEN+VT", "TP60+VT")] + ([("ORACLE+VT", "EW50+VT")] if truth is not None else []), IP_FAST, rng, cost=1.0)
     for r in comp.itertuples():
         out[f"dsharpe:{r.a}-{r.b}:c{r.cost_mult}"], out[f"p_gt:{r.a}-{r.b}:c{r.cost_mult}"] = r.diff, r.p_gt
     if with_lr:

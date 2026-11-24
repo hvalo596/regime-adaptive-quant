@@ -38,21 +38,30 @@ def main() -> None:
     ap.add_argument("--scale", type=float, default=1.0)
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--skip-synth", action="store_true")
+    ap.add_argument("--synth-only", action="store_true", help="reuse the real-panel outputs already written; only run the synthetic parts (needs --mask-pkl)")
+    ap.add_argument("--mask-pkl", default=None, help="pickle with the commodity returns (ret) used only for its availability mask")
     args = ap.parse_args()
     out3, out4 = Path(args.out3), Path(args.out4)
     out3.mkdir(parents=True, exist_ok=True)
     out4.mkdir(parents=True, exist_ok=True)
     sc = args.scale
-    log("load real data")
-    ds = load_real(args.raw_dir, panel_params=PanelParams())
     cal = json.loads(Path(args.cal).read_text())
-    com = ds.panels["commodity"]
-    ret_c = com.returns
-    held = pd.DataFrame({q: c["held"] for q, c in com.continuous.items()}).reindex(ret_c.index)
-    ev_mask = margin_events_from_settle(ds.settle_params, held) if ds.settle_params is not None else None
-    summaries = {}
-    summaries["commodity"] = panel_report("commodity", ret_c, cal, out3, out4, deep=True, ev_mask=ev_mask)
-    for sector in COMMODITY_SECTORS:
+    if args.synth_only:
+        import pickle
+
+        ret_c = pickle.load(open(args.mask_pkl, "rb"))["ret"]
+        summaries = {}
+    else:
+        log("load real data")
+        ds = load_real(args.raw_dir, panel_params=PanelParams())
+        com = ds.panels["commodity"]
+        ret_c = com.returns
+        held = pd.DataFrame({q: c["held"] for q, c in com.continuous.items()}).reindex(ret_c.index)
+        ev_mask = margin_events_from_settle(ds.settle_params, held) if ds.settle_params is not None else None
+        summaries = {}
+    if not args.synth_only:
+        summaries["commodity"] = panel_report("commodity", ret_c, cal, out3, out4, deep=True, ev_mask=ev_mask)
+    for sector in ([] if args.synth_only else COMMODITY_SECTORS):
         cols = [p for p in ret_c.columns if ds.sector_of.get(p) == sector]
         if len(cols) < 5:
             continue
@@ -60,7 +69,7 @@ def main() -> None:
         cs = calibrate(ALL_SPECS, n_sims=max(int(20 * sc), 6), n_days=len(sub), n_assets=len(cols), mask=~sub.isna().to_numpy(), seed0=960_000)
         cs["C_threshold"] = cal["C_threshold"]
         summaries[f"sector_{sector}"] = panel_report(f"sector_{sector}", sub, cs, out3, out4)
-    for g in ("index", "bond"):
+    for g in (() if args.synth_only else ("index", "bond")):
         if g in ds.panels:
             sub = ds.panels[g].returns.dropna(how="all")
             cg = calibrate(ALL_SPECS, n_sims=max(int(20 * sc), 6), n_days=len(sub), n_assets=sub.shape[1], mask=~sub.isna().to_numpy(), min_assets=3, seed0=950_000)
@@ -69,7 +78,8 @@ def main() -> None:
                 summaries[f"panel_{g}"] = panel_report(f"panel_{g}", sub, cg, out3, out4, min_assets=3)
             except Exception as e:  # noqa: BLE001 - short panels may not support the 750-day training window
                 summaries[f"panel_{g}"] = {"error": str(e)}
-    (out3 / "panel_summaries.json").write_text(json.dumps(summaries, indent=2, default=float))
+    if not args.synth_only:
+        (out3 / "panel_summaries.json").write_text(json.dumps(summaries, indent=2, default=float))
     if args.skip_synth:
         return
     mask = ~ret_c.isna().to_numpy()

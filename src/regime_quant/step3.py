@@ -285,6 +285,7 @@ class RollingFilter:
     p: np.ndarray  # (T,) filtered P(state 1) (NaN before the first refit)
     fits: list = field(default_factory=list)  # (day index, FitResult)
     degenerate_share: float = np.nan
+    p_guard: np.ndarray | None = None  # p with 0.5 (no information) in every epoch whose fit was flagged degenerate
 
 
 def rolling_filter(inc: Increments, cs: ChainSpec = ChainSpec(), refit_every: int = 250, min_train: int = 500, x: np.ndarray | None = None) -> RollingFilter:
@@ -295,12 +296,13 @@ def rolling_filter(inc: Increments, cs: ChainSpec = ChainSpec(), refit_every: in
     ok = np.isfinite(z) & np.isfinite(sig)
     idx = np.flatnonzero(ok)
     p = np.full(T, np.nan)
+    pg = np.full(T, np.nan)
     if len(idx) < max(min_train // 8, 20):
-        return RollingFilter(p)
+        return RollingFilter(p, p_guard=pg)
     first = idx[0]
     t = first + min_train
     if t >= T:
-        return RollingFilter(p)
+        return RollingFilter(p, p_guard=pg)
     fits = []
     while t < T:
         t_next = min(t + refit_every, T)
@@ -313,9 +315,10 @@ def rolling_filter(inc: Increments, cs: ChainSpec = ChainSpec(), refit_every: in
         filt, _ = forward_filter(logB, A, tv, _pi0(fr.theta, A, K, tv))
         pr = filt[:, macro == 1].sum(axis=1)
         p[t:t_next] = pr[(t - first) : (t_next - first)]
+        pg[t:t_next] = 0.5 if fr.degenerate else p[t:t_next]
         t = t_next
     deg = float(np.mean([f.degenerate for _, f in fits])) if fits else np.nan
-    return RollingFilter(p, fits, deg)
+    return RollingFilter(p, fits, deg, pg)
 
 
 # ------------------------------------------------------------------------------------------------ change points

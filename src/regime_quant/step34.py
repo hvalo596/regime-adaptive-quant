@@ -31,6 +31,14 @@ class States:
     def pr(self) -> np.ndarray:
         return self.rfR.p
 
+    @property
+    def pm_g(self) -> np.ndarray:
+        return self.rfM.p_guard
+
+    @property
+    def pr_g(self) -> np.ndarray:
+        return self.rfR.p_guard
+
 
 def build_states(ret: np.ndarray, cal: dict, cs: ChainSpec = ChainSpec(), refit_every: int = 250, min_train: int = 750, min_assets: int = 5, cache: dict | None = None, sticky: bool = True,
                  xR: np.ndarray | None = None) -> States:
@@ -67,6 +75,8 @@ def signals(st: States, truth: tuple | None = None, sp: StateParams = StateParam
         "FILT-SOFT": soft_signal(pm, pr, False),
         "FILT-PEN": pen,
         "FILT-BAND": band_signal(pen),
+        "FILT-PEN-G": soft_signal(st.pm_g, st.pr_g, True),
+        "FILT-HARD-G": np.where(np.isnan(st.pm_g) | np.isnan(st.pr_g), np.nan, (st.pm_g > 0.5).astype(float) - (st.pr_g > 0.5).astype(float)),
         "LEARNED": learned_tilt(D, pm, pr),
     }
     if truth is not None:
@@ -129,7 +139,7 @@ def holm(p: np.ndarray) -> np.ndarray:
 def theta_rows(st: States, sig: dict[str, np.ndarray], common: np.ndarray, ip: InferenceParams, rng: np.random.Generator) -> pd.DataFrame:
     rows = []
     D = np.where(common, st.run.D_next, np.nan)
-    for k in ("RULE", "FILT-HARD", "FILT-SOFT", "FILT-PEN", "FILT-BAND", "LEARNED", "TP60", "EWA", "ORACLE"):
+    for k in ("RULE", "FILT-HARD", "FILT-SOFT", "FILT-PEN", "FILT-BAND", "FILT-PEN-G", "FILT-HARD-G", "LEARNED", "TP60", "EWA", "ORACLE"):
         if k not in sig:
             continue
         th = theta_test(np.where(common, sig[k], np.nan), D, ip, rng)
