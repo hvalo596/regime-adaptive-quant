@@ -163,7 +163,8 @@ def bocpd_summary(inc, name: str, p_filt: np.ndarray) -> dict:
     gaps = np.diff(idx) if len(idx) > 1 else np.array([])
     ok = np.isfinite(b["level"]) & np.isfinite(p_filt)
     corr = float(np.corrcoef(b["level"][ok], p_filt[ok])[0, 1]) if ok.sum() > 50 else np.nan
-    yrs = np.isfinite(cp).sum() / TRADING_DAYS
+    fin = np.flatnonzero(np.isfinite(cp))
+    yrs = (fin[-1] - fin[0] + 1) / TRADING_DAYS if len(fin) else np.nan
     return {"chain": name, "alarms": int(alarm.sum()), "alarms_per_year": float(alarm.sum() / max(yrs, 1e-9)), "mean_gap_days": float(gaps.mean()) if len(gaps) else np.nan, "median_gap_days": float(np.median(gaps)) if len(gaps) else np.nan,
             "corr_level_vs_hmm_prob": corr}
 

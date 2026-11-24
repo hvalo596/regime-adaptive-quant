@@ -297,7 +297,7 @@ def rolling_filter(inc: Increments, cs: ChainSpec = ChainSpec(), refit_every: in
     idx = np.flatnonzero(ok)
     p = np.full(T, np.nan)
     pg = np.full(T, np.nan)
-    if len(idx) < max(min_train // 8, 20):
+    if len(idx) < 25:
         return RollingFilter(p, p_guard=pg)
     first = idx[0]
     t = first + min_train

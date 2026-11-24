@@ -38,6 +38,7 @@ def main() -> None:
     ap.add_argument("--scale", type=float, default=1.0)
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--skip-synth", action="store_true")
+    ap.add_argument("--skip-pipeline-null", action="store_true")
     ap.add_argument("--synth-only", action="store_true", help="reuse the real-panel outputs already written; only run the synthetic parts (needs --mask-pkl)")
     ap.add_argument("--mask-pkl", default=None, help="pickle with the commodity returns (ret) used only for its availability mask")
     args = ap.parse_args()
@@ -84,9 +85,10 @@ def main() -> None:
         return
     mask = ~ret_c.isna().to_numpy()
     n_null, n_pl, n_sw = max(int(120 * sc), 8), max(int(60 * sc), 6), max(int(30 * sc), 4)
-    log(f"pipeline null on the real mask ({n_null} sims)")
-    tasks = [dict(kind=("N0z" if i % 2 == 0 else "N0"), seed=970_000 + i, mask=True, lr=True, tag="pipeline-null") for i in range(n_null)]
-    pd.DataFrame(run_pool(planted_task, tasks, cal, mask, args.workers)).to_csv(out3 / "pipeline_null_filter.csv", index=False)
+    if not args.skip_pipeline_null:
+        log(f"pipeline null on the real mask ({n_null} sims)")
+        tasks = [dict(kind=("N0z" if i % 2 == 0 else "N0"), seed=970_000 + i, mask=True, lr=True, tag="pipeline-null") for i in range(n_null)]
+        pd.DataFrame(run_pool(planted_task, tasks, cal, mask, args.workers)).to_csv(out3 / "pipeline_null_filter.csv", index=False)
     log("null worlds, unmasked")
     tasks = []
     for kind in ("N0z", "N0", "N1", "N3", "N4"):

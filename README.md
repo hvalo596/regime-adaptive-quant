@@ -11,7 +11,9 @@
 |---|---|
 | 第 1 步：资产、回测引擎、合成世界、状态变量构造、假阳性校准 | 完成，见 `artifacts/step1/`（通过标准与数字见报告） |
 | 第 2 步：真实中国期货上的状态存在性检验 | 代码、测试、合成回退验证完成（`artifacts/step2_synthetic/`）；**真实数据运行被阻塞：环境里没有 `TUSHARE_TOKEN`**（见 `docs`/报告） |
-| 第 3 步及以后（HMM 等） | 未开始 |
+| 第 3 步：识别时效（滤波 HMM/HSMM、变点、外生提速） | 完成，见 `artifacts/step3/`（真实面板评估窗口 20.4 年；合成验证） |
+| 第 4 步：可盈利性（无状态基准、EWA、信息价值三档、倾斜/择时拆分） | 完成，见 `artifacts/step4/` |
+| 第 5 步及以后 | 未开始 |
 
 早先的阶段 1/2（PR #1、#2：VR 与刑凯四维草案的三分位检验）已被本版取代；其产物仍留在 `artifacts/phase*`，仅供对照，结论不再沿用。
 
@@ -38,6 +40,15 @@ python scripts/run_step2_validation.py 0.5 artifacts/step2_synthetic         # �
 
 没有 token 且没有缓存数据时，`run_step2.py` 写 `BLOCKED.md` 并以退出码 3 结束，不编造任何数据。
 
+第 3、4 步（需要第 2 步的缓存数据与 `artifacts/step2/calibration_commodity.json`）：
+
+```bash
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMBA_NUM_THREADS=1      # 多进程时必须，否则线程过订阅，慢 3 倍以上
+python scripts/run_step34.py --raw-dir data/raw --out3 artifacts/step3 --out4 artifacts/step4   # 约 1.5–2 小时（4 核）
+python scripts/summarize_step34.py artifacts/step3 artifacts/step4
+python scripts/check_regression_vs_step1.py <step-1 分支的 worktree>       # 共用代码改动后的逐位回归检查
+```
+
 ## 代码结构（`src/regime_quant/`）
 
 ```
@@ -59,6 +70,10 @@ step2_run.py     第 2 步总调度（校准、功效、签名、H10/H11、替�
 nondefining.py   §5 非定义变量：g^OI、AV、Amihud、Llorente b2、席位、保证金/涨跌停事件
 altchannels.py   §6 替代通道：结算价、涨跌停剔除、Roll 价差、风险溢价控制
 audit.py         极端日清单、夜盘起始日断点检验、日历检查
+step3.py         第 3 步：日增量（块均值、自归一化）、两状态 HMM/HSMM（t/高斯、持续性下限）、滚动重估与滤波、BOCPD
+step4.py         第 4 步：策略菜单（EW50/MOM/REV/TP60/EWA/规则/滤波/学习倾斜）、波动匹配、成本、配对夏普差、倾斜/择时拆分
+step34.py        第 3、4 步的粘合：状态、信号、评估、表格
+step34_run.py    第 3、4 步的调度与合成验证任务
 data/            Tushare 客户端、缓存、自己做的换月、面板、标记、产品级活跃度、合成回退（fake_tushare）
 ```
 
