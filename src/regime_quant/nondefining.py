@@ -156,13 +156,21 @@ def events_from_mask(mask: pd.DataFrame, min_gap: int = 20) -> dict[str, np.ndar
     return out
 
 
-def margin_events_from_settle(settle_params: pd.DataFrame, dates: pd.DatetimeIndex, products: list[str], col: str = "long_margin_rate") -> pd.DataFrame:
-    """Boolean (date x product): the product's exchange margin rate (max over its contracts) rose versus the previous trading day."""
-    s = settle_params.copy()
-    s["product"] = s["ts_code"].str.extract(r"^([A-Za-z]+)")[0].str.upper()
+def margin_events_from_settle(settle_params: pd.DataFrame, held: pd.DataFrame, col: str = "long_margin_rate") -> pd.DataFrame:
+    """Boolean (date x product): the margin rate of the contract HELD that day rose versus the same contract's previous trading day.
+    Using the held (main) contract only avoids the exchange's scheduled delivery-month increases on far/near contracts."""
+    s = settle_params[["ts_code", "trade_date", col]].copy()
     s["trade_date"] = pd.to_datetime(s["trade_date"].astype(str), format="%Y%m%d")
-    m = s.groupby(["trade_date", "product"])[col].max().unstack().reindex(dates).reindex(columns=products).ffill()
-    return (m.diff() > 1e-9).fillna(False)
+    s = s.drop_duplicates(["ts_code", "trade_date"]).sort_values(["ts_code", "trade_date"])
+    s["hike"] = s.groupby("ts_code")[col].diff() > 1e-9
+    key = s.set_index(["ts_code", "trade_date"])["hike"]
+    out = {}
+    for p in held.columns:
+        h = held[p].dropna()
+        idx = pd.MultiIndex.from_arrays([h.to_numpy(), h.index])
+        v = key.reindex(idx).fillna(False).to_numpy(dtype=bool)
+        out[p] = pd.Series(v, index=h.index).reindex(held.index, fill_value=False)
+    return pd.DataFrame(out).fillna(False).astype(bool)
 
 
 def event_study(events: dict[str, np.ndarray], series: dict[str, np.ndarray], horizon: int = 10, guard: int = 20, ip: InferenceParams = InferenceParams(), rng: np.random.Generator | None = None) -> dict:

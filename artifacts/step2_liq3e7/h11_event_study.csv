@@ -1,0 +1,4 @@
+outcome,event_kind,n_events,mean_diff,ci_lo,ci_hi
+tau_R,"margin increase of the held contract (fut_settle, from 2021-01-04)",785,-0.03174870218430135,-0.09883722244344775,0.032330739542464314
+P(delta_R=1),"margin increase of the held contract (fut_settle, from 2021-01-04)",785,0.01337579617834395,-0.016633757961783433,0.03943630573248407
+g_OI,"margin increase of the held contract (fut_settle, from 2021-01-04)",785,-0.044228455021313104,-0.11124291856209494,0.028825993972703703

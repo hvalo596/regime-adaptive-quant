@@ -262,6 +262,21 @@ def run_all(ds: Dataset, out: Path, scale: float = 1.0, seed: int = 5, min_years
         h12 = h12_bond_vs_commodity(pr, res_bond)
         h12.to_csv(out / "h12_bond_vs_commodity.csv", index=False)
 
+    # ---- per-state means of D and the two legs (risk-standardised, 10% target vol legs)
+    from .inference import mean_ci, sharpe as _sharpe
+    from .statemachine import segments as _segs
+
+    run_c = pr.run
+    sm_rows = []
+    for k in ("I", "II", "III", "IV", "ALL"):
+        m = np.isfinite(run_c.D_next) & (run_c.valid if k == "ALL" else (pr.labels == k))
+        row = {"state": k, "days": int(m.sum()), "fragments_ge10d": len(_segs(pr.labels, k, 10)) if k != "ALL" else np.nan}
+        for nm, x in (("D", run_c.D_next), ("x_MOM", run_c.legs.mom.x_next), ("x_REV", run_c.legs.rev.x_next)):
+            mm, lo, hi = mean_ci(x[m & np.isfinite(x)], IP, rng)
+            row.update({f"{nm}_mean": mm, f"{nm}_ci_lo": lo, f"{nm}_ci_hi": hi, f"{nm}_ann_sharpe": _sharpe(x[m & np.isfinite(x)]) if m.sum() > 30 else np.nan})
+        sm_rows.append(row)
+    pd.DataFrame(sm_rows).to_csv(out / "state_means_commodity.csv", index=False)
+
     # ---- per product
     log("per product")
     pp, pp_runs = per_product(ret_c, cal1, ledger)
@@ -278,8 +293,9 @@ def run_all(ds: Dataset, out: Path, scale: float = 1.0, seed: int = 5, min_years
     h11 = None
     if pp_runs:
         if ds.settle_params is not None:
-            ev_mask = margin_events_from_settle(ds.settle_params, ret_c.index, list(ret_c.columns))
-            ev_kind = "margin increase (fut_settle)"
+            held = pd.DataFrame({q: c["held"] for q, c in com.continuous.items()}).reindex(ret_c.index)
+            ev_mask = margin_events_from_settle(ds.settle_params, held)
+            ev_kind = "margin increase of the held contract (fut_settle, from 2021-01-04)"
         else:
             ev_mask = (com.limit_locked | com.one_price)
             ev_kind = "PROXY: limit-locked / one-price days (fut_settle margins not available)"

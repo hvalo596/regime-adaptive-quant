@@ -148,3 +148,26 @@ def fetch_settle(client: TushareClient, store: RawStore, trade_dates: list[str],
     if parts:
         store.write(pd.concat(parts, ignore_index=True), "fut_settle.csv.gz")
     return warnings
+
+
+def fetch_settle_contracts(client: TushareClient, store: RawStore, ts_codes: list[str], progress=print) -> list[str]:
+    """fut_settle (margin rates) per contract; the API only holds data from 2021-01-04, so contracts that ended before that return
+    nothing. One call per contract (history <= 4000 rows), resumable via fut_settle_contracts/<ts_code>.csv.gz, consolidated into
+    fut_settle.csv.gz (kept columns only)."""
+    warnings, parts = [], []
+    for i, code in enumerate(ts_codes, 1):
+        rel = ("fut_settle_contracts", f"{code}.csv.gz")
+        if not store.exists(*rel):
+            df = client.query("fut_settle", ts_code=code)
+            keep = df[[c for c in SETTLE_KEEP if c in df.columns]] if not df.empty else df
+            store.write(keep, *rel)
+            if len(df) >= client.row_caps["fut_settle"]:
+                warnings.append(f"{code}: hit row cap")
+        if i % 100 == 0:
+            progress(f"fut_settle {i}/{len(ts_codes)} contracts")
+        d = store.read(*rel)
+        if not d.empty:
+            parts.append(d)
+    if parts:
+        store.write(pd.concat(parts, ignore_index=True), "fut_settle.csv.gz")
+    return warnings

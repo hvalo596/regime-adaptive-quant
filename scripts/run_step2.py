@@ -14,6 +14,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
+from regime_quant.data.panel import PanelParams  # noqa: E402
 from regime_quant.step2 import load_real, synthetic_dataset  # noqa: E402
 from regime_quant.step2_run import run_all  # noqa: E402
 
@@ -27,6 +28,7 @@ def main() -> int:
     ap.add_argument("--effect", type=float, default=0.15)
     ap.add_argument("--n-days", type=int, default=2500)
     ap.add_argument("--scale", type=float, default=1.0)
+    ap.add_argument("--min-amount-wan", type=float, default=10_000.0, help="liquidity latch: 60-day median turnover in 10k CNY (default 10000 = 1e8 CNY/day, the pre-registered value); lowering it is a sensitivity run")
     ap.add_argument("--min-years", type=float, default=20.0, help="required calendar span of the commodity analysis window; the run still completes but flags a shortfall in summary.json and coverage_panel.csv")
     args = ap.parse_args()
     out = Path(args.out)
@@ -34,7 +36,7 @@ def main() -> int:
         ds = synthetic_dataset(args.kind, args.effect, args.n_days)
     else:
         try:
-            ds = load_real(args.raw_dir)
+            ds = load_real(args.raw_dir, panel_params=PanelParams(min_median_amount_wan=args.min_amount_wan))
         except FileNotFoundError as e:
             out.mkdir(parents=True, exist_ok=True)
             (out / "BLOCKED.md").write_text(f"# Step 2 blocked\n\n{e}\n\nSet TUSHARE_TOKEN (secret) and run scripts/fetch_tushare_futures.py, then re-run.\n")

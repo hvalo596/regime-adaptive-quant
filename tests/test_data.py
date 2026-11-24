@@ -150,8 +150,10 @@ def test_fetch_settle_roundtrip_and_events(tmp_path, synth):
     client = TushareClient(TushareConfig(token="x", max_calls_per_min=10**6), transport=tr, sleep=lambda s: None)
     store = RawStore(tmp_path)
     dates = [d.strftime("%Y%m%d") for d in pd.bdate_range("2012-02-20", "2012-04-20")]
-    warns = fetch_settle(client, store, dates, ["SHFE"])
-    assert warns == []
+    assert fetch_settle(client, store, dates, ["SHFE"]) == []
     st = store.read("fut_settle.csv.gz")
-    ev = margin_events_from_settle(st, pd.bdate_range("2012-02-20", "2012-04-20"), ["RB"])
-    assert ev["RB"].sum() == 1  # the planted step up at the start of March->April block
+    idx = pd.bdate_range("2012-02-20", "2012-04-20")
+    code = st[st["ts_code"].str.startswith("RB")]["ts_code"].iloc[0]
+    held = pd.DataFrame({"RB": code}, index=idx)
+    ev = margin_events_from_settle(st, held)
+    assert ev["RB"].sum() == 1  # the planted step up (Feb -> March), the step down in April is not a hike

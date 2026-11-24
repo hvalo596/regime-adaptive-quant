@@ -37,6 +37,8 @@ def extreme_days(panel, threshold: float = 0.12, context: int = 2) -> pd.DataFra
                 tag = "limit/one-price day"
             elif pd.notna(row.get("h_pre_settle")) and abs(close / row["h_pre_settle"] - 1) > 0.2:
                 tag = "beyond any daily limit: check"
+            elif pd.notna(row.get("h_pre_close")) and pd.notna(row.get("h_pre_settle")) and abs(row["h_pre_close"] / row["h_pre_settle"] - 1) > 0.10:
+                tag = "previous close far from previous settle (>10%): close dislocation, check"
             else:
                 tag = "plausible genuine move"
             rows.append({"product": p, "date": dt.date(), "ret": float(val), "contract": row.get("held"), "close": close, "pre_settle": row.get("h_pre_settle"), "high": hi, "low": lo, "settle": row.get("h_settle"),

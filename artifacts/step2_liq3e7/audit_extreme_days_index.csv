@@ -1,0 +1,4 @@
+product,date,ret,contract,close,pre_settle,high,low,settle,volume,one_price,roll_day,unadj_ret,same_sign_share_of_products,ret_window,close_outside_high_low,suspect
+IM,2024-02-06,0.1295060080106809,IM2403.CFX,4568.4,4175.6,4575.0,4002.0,4524.4,158325.0,False,False,0.1295060080106809,1.0,"-0.042,-0.091,+0.130,+0.049,+0.039",False,plausible genuine move
+IC,2015-07-07,-0.12416666666666665,IC1507.CFX,6516.2,7240.2,7438.0,6516.2,6618.4,126905.0,False,False,-0.12416666666666665,1.0,"-0.034,+0.005,-0.124,-0.086,+0.100",False,plausible genuine move
+IC,2024-02-06,0.12242135722953429,IC2403.CFX,4809.8,4392.8,4822.0,4271.8,4770.4,106471.0,False,False,0.12242135722953429,1.0,"-0.031,-0.038,+0.122,+0.066,-0.004",False,plausible genuine move

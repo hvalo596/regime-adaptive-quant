@@ -1,0 +1,38 @@
+{
+  "source": "real",
+  "notes": [
+    "turnover (amount) was NaN on 67573 contract-days and was filled with vol*close*multiplier/1e4"
+  ],
+  "calendar": {
+    "n_dates": 6528,
+    "first": "2000-01-04",
+    "last": "2026-11-24",
+    "weekend_dates": 3,
+    "gaps_over_5_days": 77,
+    "max_gap_days": 13
+  },
+  "H0_commodity": {
+    "theta_c": -7.688182859246946e-05,
+    "ci": [
+      -0.0002796544823091435,
+      0.0001300573700876831
+    ],
+    "p_shift": 0.7632367632367633,
+    "p_pipeline": 0.8407960199004975,
+    "detect": false,
+    "benchmark_theta_planted_0.10": 0.00016825164036997172,
+    "power_planted_0.10_doc_dwell": 0.225,
+    "verdict": "NOT FOUND: the upper end of the 95% interval (1.30e-04) is below the Theta a planted effect of 0.10 produces here (1.68e-04)"
+  },
+  "per_product_multiplicity": {
+    "n_products": 40,
+    "n_reject_5pct": 1,
+    "expected_by_chance": 2.0,
+    "binomial_p_for_count": 0.8714878434348967,
+    "n_holm_reject": 0
+  },
+  "seats": "fut_holding not fetched: seat signatures not computed",
+  "commodity_analysis_span_years": 23.98631074606434,
+  "meets_min_years": true,
+  "n_trials_in_ledger": 301
+}

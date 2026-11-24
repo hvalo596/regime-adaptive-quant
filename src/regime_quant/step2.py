@@ -67,12 +67,25 @@ def group_products(sector_of: dict[str, str]) -> dict[str, list[str]]:
     }
 
 
+def fill_missing_amount(daily: pd.DataFrame, basic: pd.DataFrame) -> tuple[pd.DataFrame, int]:
+    """Tushare `amount` (10k CNY) is NaN for early years (SHFE before ~2008). Fall back to vol * close * contract_multiplier / 1e4,
+    with the multiplier taken from fut_basic (`multiplier`, else `per_unit`). Needed for the liquidity latch and Amihud; the number of
+    filled rows is returned so it can be reported."""
+    b = basic.drop_duplicates("ts_code").set_index("ts_code")
+    mult = b["multiplier"].where(b["multiplier"].notna(), b["per_unit"]).astype(float)
+    d = daily.copy()
+    miss = d["amount"].isna() & d["vol"].notna() & d["close"].notna()
+    est = d["vol"] * d["close"] * d["ts_code"].map(mult) / 1e4
+    d.loc[miss, "amount"] = est[miss]
+    return d, int(miss.sum())
+
+
 def build_dataset(basic: pd.DataFrame, daily: pd.DataFrame, mappings: dict[str, pd.DataFrame], products: list[str], source: str,
                   roll: RollParams = RollParams(), panel_params: PanelParams = PanelParams(), with_carry: bool = True) -> Dataset:
     sector_of = {p: PRODUCTS[p][1] for p in products}
     groups = group_products(sector_of)
     panels, act, carry = {}, {}, {}
-    daily = daily.copy()
+    daily, n_filled = fill_missing_amount(daily, basic)
     if not pd.api.types.is_datetime64_any_dtype(daily["trade_date"]):
         daily["trade_date"] = pd.to_datetime(daily["trade_date"].astype(str), format="%Y%m%d")
     for g, plist in groups.items():
@@ -86,7 +99,7 @@ def build_dataset(basic: pd.DataFrame, daily: pd.DataFrame, mappings: dict[str, 
         if with_carry:
             held = pd.DataFrame({p: c["held"] for p, c in panels[g].continuous.items()})
             carry[g] = carry_proxy(daily, basic, held, list(panels[g].returns.columns))
-    return Dataset(source=source, panels=panels, activity=act, carry=carry, sector_of=sector_of, basic=basic, daily=daily)
+    return Dataset(source=source, panels=panels, activity=act, carry=carry, sector_of=sector_of, basic=basic, daily=daily, notes=[f"turnover (amount) was NaN on {n_filled} contract-days and was filled with vol*close*multiplier/1e4"])
 
 
 def load_real(raw_dir: str | Path, products: list[str] | None = None, **kw) -> Dataset:
@@ -251,7 +264,7 @@ def state_battery(pr: PanelResult, ledger: Ledger, ip: InferenceParams = IP, see
         elif ok:
             vd = "supported"
         else:
-            vd = "direction ok, CI includes 0" if np.sign(r.diff) == sign else "wrong sign" + (" (CI excludes 0)" if (r.ci_hi < 0 or r.ci_lo > 0) else "")
+            vd = "direction ok, CI includes 0" if np.sign(r.diff) == sign else "wrong sign" + (" (CI excludes 0)" if (r.ci_hi < 0 or r.ci_lo > 0) else ", CI includes 0")
         add(h, f"D_{k}-D_IV", r.diff, r.ci_lo, r.ci_hi, r.p_shift, vd, f"segments {k}: {r.segs_a}, IV: {r.segs_b}")
         leg = xm if k == "I" else xr
         mm, lo, hi = mean_ci(leg[masks[k] & np.isfinite(leg)], ip, rng)
@@ -262,7 +275,7 @@ def state_battery(pr: PanelResult, ledger: Ledger, ip: InferenceParams = IP, see
     if m2.sum() > 60:
         X = np.column_stack([np.ones(m2.sum()), run.env.zPhi_perp[m2]])
         b, lo, hi = ols_boot(xr[m2], X, ip, rng)
-        add("H2b", "slope_xREV_on_zPhiPerp|II", b[1], lo[1], hi[1], np.nan, "supported" if lo[1] > 0 else "CI includes 0" if hi[1] > 0 else "negative")
+        add("H2b", "slope_xREV_on_zPhiPerp|II", b[1], lo[1], hi[1], np.nan, "supported" if lo[1] > 0 else "CI includes 0" if hi[1] > 0 else "negative (CI excludes 0)")
     else:
         add("H2b", "slope_xREV_on_zPhiPerp|II", np.nan, verdict="too few II days")
 
@@ -302,8 +315,15 @@ def state_battery(pr: PanelResult, ledger: Ledger, ip: InferenceParams = IP, see
     X = np.column_stack([np.ones(len(xm)), run.tau_m, run.tau_r, Z])
     for leg, nm in ((xm, "MOM"), (xr, "REV")):
         b, lo, hi = ols_boot(leg, X, ip, rng)
-        add("H6", f"{nm}_leg: b_tauM", b[1], lo[1], hi[1])
-        add("H6", f"{nm}_leg: b_tauR", b[2], lo[2], hi[2])
+        for j, tn in ((1, "tauM"), (2, "tauR")):
+            own = (nm == "MOM" and tn == "tauM") or (nm == "REV" and tn == "tauR")
+            if lo[j] > 0:
+                vd = "own-scale: predicted sign" if own else "cross: positive (CI excludes 0)"
+            elif hi[j] < 0:
+                vd = "own-scale: WRONG sign (CI excludes 0)" if own else "cross: negative (CI excludes 0)"
+            else:
+                vd = "CI includes 0"
+            add("H6", f"{nm}_leg: b_{tn}", b[j], lo[j], hi[j], np.nan, vd)
     # H7: stickiness
     for nm, d in (("M", run.delta_m), ("R", run.delta_r)):
         dd = d[v]
@@ -323,7 +343,7 @@ def state_battery(pr: PanelResult, ledger: Ledger, ip: InferenceParams = IP, see
         add("H8", f"theta_c in zV {nm} tercile", t3.theta_c, t3.ci_lo, t3.ci_hi, t3.p_shift, "positive" if t3.lo_one_sided > 0 else "not significant", f"n={t3.n}")
     Xc = np.column_stack([np.ones(len(D)), run.s, run.env.zV, run.env.zPhi_perp])
     b, lo, hi = ols_boot(D, Xc, ip, rng)
-    add("H8", "coef_s | controls zV, zPhiPerp", b[1], lo[1], hi[1], np.nan, "positive" if lo[1] > 0 else "CI includes 0")
+    add("H8", "coef_s | controls zV, zPhiPerp", b[1], lo[1], hi[1], np.nan, "positive" if lo[1] > 0 else ("negative (CI excludes 0)" if hi[1] < 0 else "CI includes 0"))
     return pd.DataFrame(rows)
 
 

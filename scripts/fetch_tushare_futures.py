@@ -20,7 +20,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from regime_quant.data.store import RawStore, fetch_holding, fetch_settle, fetch_universe  # noqa: E402
+from regime_quant.data.store import RawStore, fetch_holding, fetch_settle, fetch_settle_contracts, fetch_universe  # noqa: E402
 from regime_quant.data.tushare_client import MissingTokenError, TushareClient, TushareConfig  # noqa: E402
 from regime_quant.data.universe import PRODUCTS, commodity_products  # noqa: E402
 
@@ -37,6 +37,7 @@ def main() -> int:
     ap.add_argument("--calls-per-min", type=int, default=150)
     ap.add_argument("--holding-dates", default=None, help="comma-separated YYYYMMDD list; fetches fut_holding rankings")
     ap.add_argument("--all-days-extras", action="store_true", help="fetch fut_holding and fut_settle for every trade day of the fetched products (about 5 calls per day: slow, 1-2 hours)")
+    ap.add_argument("--margin-contracts", action="store_true", help="fetch fut_settle (margin rates) for every contract that was the official main contract since 2021-01-01 (API history starts 2021-01-04); ~1 call per contract")
     ap.add_argument("--settle-dates", default=None, help="comma-separated YYYYMMDD list; fetches fut_settle margin parameters")
     args = ap.parse_args()
     if args.start is None:
@@ -75,6 +76,17 @@ def main() -> int:
         cal = client.trade_cal("SHFE", args.start, args.end or __import__("time").strftime("%Y%m%d"))
         days = sorted(cal[cal["is_open"] == 1]["cal_date"].astype(str).tolist())
         hold_dates = settle_dates = days
+    if args.margin_contracts:
+        import pandas as _pd
+
+        codes = set()
+        for p in products:
+            m = store.mapping(p)
+            if not m.empty:
+                codes |= set(m[m["trade_date"].astype(str) >= "20210101"]["mapping_ts_code"].dropna().unique())
+        print(f"margin parameters for {len(codes)} contracts")
+        for w in fetch_settle_contracts(client, store, sorted(codes)):
+            print("WARNING:", w)
     if hold_dates:
         for w in fetch_holding(client, store, hold_dates, exs):
             print("WARNING:", w)
