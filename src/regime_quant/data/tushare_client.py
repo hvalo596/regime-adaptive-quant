@@ -50,7 +50,7 @@ class TushareConfig:
         if not self.token:
             raise MissingTokenError(
                 "TUSHARE_TOKEN is not set in the environment. Set it as a secret/env var (it is never read from files); "
-                "without it use the synthetic fallback (scripts/run_phase2_existence.py --synthetic)."
+                "without it use the synthetic fallback (scripts/run_step2.py --synthetic)."
             )
         return self.token
 

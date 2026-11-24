@@ -28,9 +28,10 @@ python scripts/summarize_step1.py artifacts/step1               # 验收判定 �
 
 ```bash
 export TUSHARE_TOKEN=...
-python scripts/fetch_tushare_futures.py --group all --start 20100101       # 合约表、逐合约日线、官方映射 → data/raw（已 gitignore，可断点续跑）
-python scripts/fetch_tushare_futures.py --group all --start 20100101 --all-days-extras   # 另取每日 fut_holding 与 fut_settle（慢，1-2 小时）
-python scripts/run_step2.py --raw-dir data/raw --out artifacts/step2
+python scripts/fetch_tushare_futures.py --group all                          # 默认窗口 = 今天回推 22 年（20 个分析年 + 预热）；可用 --start-date 20050101 / --years 覆盖
+#   → data/raw（已 gitignore，可断点续跑）
+python scripts/fetch_tushare_futures.py --group all --all-days-extras   # 另取每日 fut_holding 与 fut_settle（慢，1-2 小时）
+python scripts/run_step2.py --raw-dir data/raw --out artifacts/step2     # --min-years 20：窗口不足 20 年时在 summary.json / coverage_panel.csv 标出
 python scripts/run_step2.py --synthetic --kind regime --out /tmp/s2          # 无 token：同一条代码路径走合成数据（管线检查，不是证据）
 python scripts/run_step2_validation.py 0.5 artifacts/step2_synthetic         # 合成回退验证：植入状态应被找到，无状态不应被找到
 ```

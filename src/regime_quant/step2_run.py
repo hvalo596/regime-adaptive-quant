@@ -143,7 +143,36 @@ def verdict(th_c, ci_lo, ci_hi, detect, p_pipe, benchmark_theta, power_rate):
     return f"UNDERPOWERED: not rejected, but the interval still contains the Theta of a planted 0.10 effect ({benchmark_theta:.2e}); detection rate of such an effect at this sample is {power_rate:.0%}"
 
 
-def run_all(ds: Dataset, out: Path, scale: float = 1.0, seed: int = 5) -> dict:
+def coverage_tables(ds: Dataset, results: dict[str, "PanelResult"], min_years: float) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Per-product and per-panel coverage: raw first/last bar, first date inside the panel (after the liquidity latch and 250-day
+    history), analysis window (first / last day with a defined selection signal), live products, N_eff, drop reasons."""
+    prod_rows, panel_rows = [], []
+    for g, pan in ds.panels.items():
+        d = pan.diagnostics.copy()
+        first_ret = pan.returns.apply(lambda c: c.first_valid_index())
+        for r in d.itertuples():
+            prod_rows.append({"panel": g, "product": r.product, "raw_first_bar": getattr(r, "first_date", None), "raw_last_bar": getattr(r, "last_date", None),
+                              "n_rollable_days": getattr(r, "n_days", None), "included": r.included, "drop_reason": r.reason, "liquid_from": getattr(r, "liquid_from", None),
+                              "first_return_in_panel": str(first_ret.get(r.product).date()) if r.included and pd.notna(first_ret.get(r.product)) else None})
+        ret = pan.returns
+        first_any = ret.dropna(how="all").index[0]
+        row = {"panel": g, "n_products_included": int(d["included"].sum()), "n_products_total": len(d), "first_return_date": str(first_any.date()), "last_date": str(ret.index[-1].date()),
+               "live_products_mean": float(ret.notna().sum(axis=1).mean()), "live_products_min": int(ret.notna().sum(axis=1).min()), "live_products_max": int(ret.notna().sum(axis=1).max())}
+        pr = results.get(g)
+        if pr is not None:
+            v = pr.run.valid
+            if v.any():
+                i0, i1 = np.flatnonzero(v)[[0, -1]]
+                dates = ret.index
+                row.update({"analysis_first_day": str(dates[i0].date()), "analysis_last_day": str(dates[i1].date()), "analysis_days": int(v.sum()),
+                            "analysis_span_years": float((dates[i1] - dates[i0]).days / 365.25), "n_eff_M_mean": float(np.nanmean(pr.run.mr_m.n_eff[v])), "n_eff_R_mean": float(np.nanmean(pr.run.mr_r.n_eff[v]))})
+                row["meets_min_years"] = bool(row["analysis_span_years"] >= min_years)
+                row["warmup_days_lost"] = int(i0)
+        panel_rows.append(row)
+    return pd.DataFrame(prod_rows), pd.DataFrame(panel_rows)
+
+
+def run_all(ds: Dataset, out: Path, scale: float = 1.0, seed: int = 5, min_years: float = 20.0) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     ledger = Ledger()
     rng = np.random.default_rng(seed)
@@ -180,6 +209,7 @@ def run_all(ds: Dataset, out: Path, scale: float = 1.0, seed: int = 5) -> dict:
     # ---- main panel
     log("commodity panel")
     pr = analyze_panel("commodity", ret_c, cal, ledger)
+    results_by_panel = {"commodity": pr}
     battery = [state_battery(pr, ledger)]
     log("pipeline-level null for Theta")
     null_th = pipeline_null_theta(ret_c, cal, n_sims=n_null)
@@ -226,6 +256,7 @@ def run_all(ds: Dataset, out: Path, scale: float = 1.0, seed: int = 5) -> dict:
         rows.append({"panel": f"panel:{g}", "combo": "M-B|R-A", "theta_raw": t.theta_raw, "theta_c": t.theta_c, "ci_lo": t.ci_lo, "ci_hi": t.ci_hi, "p_shift": t.p_shift, "detect": t.detect, "mean_s": t.mean_s, "mean_D": t.mean_D, "n": t.n})
         if g == "bond":
             res_bond = prg
+        results_by_panel[g] = prg
     pd.DataFrame(rows).to_csv(out / "theta_by_panel.csv", index=False)
     if res_bond is not None:
         h12 = h12_bond_vs_commodity(pr, res_bond)
@@ -286,6 +317,16 @@ def run_all(ds: Dataset, out: Path, scale: float = 1.0, seed: int = 5) -> dict:
         segs = segments(pr.labels, k, 10)
         seg_rows.append({"state": k, "days": int((pr.labels == k).sum()), "segments_ge10d": len(segs), "mean_length": float(np.mean([b - a for a, b in segs])) if segs else np.nan})
     pd.DataFrame(seg_rows).to_csv(out / "state_segments.csv", index=False)
+    cov_prod, cov_panel = coverage_tables(ds, results_by_panel, min_years)
+    cov_prod.to_csv(out / "coverage_products.csv", index=False)
+    cov_panel.to_csv(out / "coverage_panel.csv", index=False)
+    cp = cov_panel[cov_panel.panel == "commodity"]
+    if len(cp) and "analysis_span_years" in cp:
+        span = float(cp.analysis_span_years.iloc[0])
+        summary["commodity_analysis_span_years"] = span
+        summary["meets_min_years"] = bool(span >= min_years)
+        if span < min_years:
+            summary["span_warning"] = f"commodity analysis window spans {span:.1f} years, below the required {min_years:.0f}: data availability, not a choice"
     summary["n_trials_in_ledger"] = len(ledger.rows)
     (out / "summary.json").write_text(json.dumps(summary, indent=2, default=float))
     log("done")

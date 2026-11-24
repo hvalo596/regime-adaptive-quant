@@ -145,7 +145,7 @@ def test_end_to_end_synthetic_fallback_and_blocked_path(tmp_path, monkeypatch):
     assert ds.source == "synthetic" and "commodity" in ds.panels
     summ = run_all(ds, tmp_path / "out", scale=0.05)
     for f in ("hypotheses.csv", "theta_by_panel.csv", "trial_ledger.csv", "power_real_dims.csv", "nondefining_signatures.csv", "audit_extreme_days_commodity.csv",
-              "audit_night_session_commodity.csv", "per_product_theta.csv", "summary.json"):
+              "audit_night_session_commodity.csv", "per_product_theta.csv", "summary.json", "coverage_panel.csv", "coverage_products.csv"):
         assert (tmp_path / "out" / f).exists(), f
     assert "verdict" in summ["H0_commodity"]
     root = Path(__file__).resolve().parents[1]
