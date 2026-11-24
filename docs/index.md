@@ -45,7 +45,8 @@ cursor:
 | [step1-plan.md](A-idea/archive/step1-plan.md) | **被取代**（→ step1-plan-v2.md） | 2026-11-18 旧方案：围绕 6 个 VR/刑凯代理指标的"幻觉率/功效"，与已批准的理论不一致；文件未改动 |
 | [step1-plan-v2.md](B-experiment/step1-plan-v2.md) | 现行 | 按状态构建理论重写的第 1 步方案：范围、锁定参数、A1–A8 通过标准 |
 | [step1-result-report.md](B-experiment/step1-result-report.md) | 现行（数字出处） | 第 1 步结果：A1–A7 全部通过，全部数字表，偏离清单 D1–D11，局限 |
-| [step1-paper-report.md](B-experiment/step1-paper-report.md) | 现行（论文式整理） | 第 1 步论文式报告：摘要、数学构造全公式、实验设计、结果全表、讨论、复现与产物清单 |
+| [step1-paper-report.md](B-experiment/step1-paper-report.md) | 现行（论文式整理，2026-11-24 按实证论文文体重写） | 第 1 步论文式报告：摘要、识别框架、计量构造、合成实验设计、结果与解读、讨论（有效性、功效、外部效度、实现偏离、第 2 步读法）、附录 |
+| [step1-paper-report-2026-11-24-checklist-style.md](A-idea/archive/step1-paper-report-2026-11-24-checklist-style.md) | **被取代**（→ step1-paper-report.md） | 同日首版论文式报告，条目式文体；数字与现行版一致 |
 | [step2-result-report.md](A-idea/archive/step2-result-report.md) | **被取代**（→ step2-result-report-v2.md） | 2026-11-18 旧第 2 步白话报告（PR #2 分支，6 个孤立指标三分位检验，真实数据结果为否定）；其理论口径已被废弃，否定结论不代表"状态不存在" |
 | [step2-result-report-v2.md](B-experiment/step2-result-report-v2.md) | 现行 | 2026-11-21 第 2 步 v2：真实数据运行被阻塞（环境无 `TUSHARE_TOKEN`），代码、测试与合成回退验证已完成 |
 
@@ -75,7 +76,7 @@ cursor:
 | `A-idea/theory/` | state-construction |
 | `A-idea/background/` | kai-dims-and-experiment-steps |
 | `A-idea/meta/` | preferences、thought-log |
-| `A-idea/archive/` | step1-plan（被取代）、step2-result-report（被取代）、regime-identification-why-sonnet-v1（被取代） |
+| `A-idea/archive/` | step1-plan（被取代）、step2-result-report（被取代）、regime-identification-why-sonnet-v1（被取代）、step1-paper-report-2026-11-24-checklist-style（被取代） |
 | `A-raw/` | research-proposal.txt、research-proposal.docx、kai-wechat-screenshot.png、tushare-access-check.md |
 | `B-experiment/` | step1-plan-v2、step1-result-report、step1-paper-report、step2-result-report-v2 |
 | `docs/` 根 | README.md（总导航）、index.md（本文件）、phase2-china-futures-step2.md 与 phase2-step2-stop-memo.md（旧阶段 2 文档，原样保留） |
@@ -87,6 +88,7 @@ cursor:
 | [A-idea/archive/step1-plan.md](./A-idea/archive/step1-plan.md)（2026-11-18） | [B-experiment/step1-plan-v2.md](./B-experiment/step1-plan-v2.md)（2026-11-21） | 旧方案围绕 6 个孤立指标的幻觉率/功效，与已批准的状态构建理论不一致 |
 | [A-idea/archive/step2-result-report.md](./A-idea/archive/step2-result-report.md)（2026-11-18） | [B-experiment/step2-result-report-v2.md](./B-experiment/step2-result-report-v2.md)（2026-11-21） | 旧报告是 6 个指标三分位的否定性结果，理论口径已换；v2 在新理论下重做，真实数据运行因缺 token 被阻塞 |
 | [A-idea/archive/regime-identification-why-sonnet-v1.md](./A-idea/archive/regime-identification-why-sonnet-v1.md) | [A-idea/core/regime-identification-why.md](./A-idea/core/regime-identification-why.md) | Sonnet 初版 → Opus 加固版 |
+| [A-idea/archive/step1-paper-report-2026-11-24-checklist-style.md](./A-idea/archive/step1-paper-report-2026-11-24-checklist-style.md)（2026-11-24） | [B-experiment/step1-paper-report.md](./B-experiment/step1-paper-report.md)（2026-11-24） | 首版为条目/表格堆叠文体；现行版按实证论文文体重写，数字不变 |
 
 ---
 

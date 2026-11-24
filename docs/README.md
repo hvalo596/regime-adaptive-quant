@@ -20,7 +20,7 @@ docs/
     theory/        state-construction（理论地基，已批准）
     background/    kai-dims-and-experiment-steps（刑凯四维与实验步骤背景）
     meta/          preferences、thought-log（项目偏好与思想源泉记录）
-    archive/       被取代的旧文档：step1-plan、step2-result-report、regime-identification-why-sonnet-v1
+    archive/       被取代的旧文档：step1-plan、step2-result-report、regime-identification-why-sonnet-v1、step1-paper-report-2026-11-24-checklist-style
   A-raw/           原始资料：研究方案（txt/docx）、刑凯微信截图、Tushare 权限检查（不含 token）
   B-experiment/    step1-plan-v2、step1-result-report、step1-paper-report、step2-result-report-v2
   phase2-*.md      旧阶段 2 文档（原样保留，结论不再沿用）
