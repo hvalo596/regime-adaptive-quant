@@ -5,6 +5,10 @@
 核心问题：能否通过识别"此刻谁在付钱"，在**动量**（收慢人的迟到费）与**短期反转**（收急人的加急费）之间做出有信息量的配置？
 理论地基是 `state-construction.md`（5 个状态 = 慢人 × 急人 四象限 + 知情冲击叠加；3 个定义变量 $M,R,C$ + 2 个环境变量 $V,\Phi^\perp$；选择信号 $s_t=\delta^M_t-\delta^R_t$，主检验量 $\Theta=\mathbb E[s_tD_{t+1}]$）。
 
+## 文档（Documentation）
+
+**项目全部文档（思想方案、理论、实验报告、原始资料）见 [`docs/README.md`](docs/README.md)。** 分两块：块 A 思想与方案（`docs/A-idea/`、`docs/A-raw/`），块 B 实验方案与报告（`docs/B-experiment/`）；代码与产物仍在 `src/`、`scripts/`、`tests/`、`artifacts/`。文件级索引见 [`docs/index.md`](docs/index.md)。
+
 ## 进度
 
 | 步骤 | 状态 |
