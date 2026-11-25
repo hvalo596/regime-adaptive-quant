@@ -44,12 +44,13 @@ class TushareConfig:
 
     @classmethod
     def from_env(cls, **overrides) -> "TushareConfig":
-        return cls(token=os.environ.get("TUSHARE_TOKEN") or None, **overrides)
+        token = os.environ.get("TUSHARE_TOKEN") or os.environ.get("TUSHARE") or None
+        return cls(token=token, **overrides)
 
     def require_token(self) -> str:
         if not self.token:
             raise MissingTokenError(
-                "TUSHARE_TOKEN is not set in the environment. Set it as a secret/env var (it is never read from files); "
+                "TUSHARE_TOKEN (or TUSHARE) is not set in the environment. Set it as a secret/env var (it is never read from files); "
                 "without it use the synthetic fallback (scripts/run_step2.py --synthetic)."
             )
         return self.token
